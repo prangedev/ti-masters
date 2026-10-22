@@ -4,4 +4,7 @@
     <files-path name="orders" path="orders/" />
     <files-path name="firmware" path="firmware/" />
     <cache-path name="updates" path="updates/" />
+    <!-- The camera app writes Business photos here before they are imported. -->
+    <cache-path name="camera" path="camera/" />
+    <files-path name="order_media" path="order-media/" />
 </paths>

@@ -5,9 +5,11 @@ import androidx.room.Room
 import br.com.timasters.app.data.business.AppointmentDao
 import br.com.timasters.app.data.business.ClientDao
 import br.com.timasters.app.data.business.CompanyProfileDao
+import br.com.timasters.app.data.business.OrderPhotoDao
 import br.com.timasters.app.data.business.PricingSettingsDao
 import br.com.timasters.app.data.business.ServiceItemDao
 import br.com.timasters.app.data.business.ServiceOrderDao
+import br.com.timasters.app.data.business.StockMovementDao
 import br.com.timasters.app.data.business.TicketDao
 import br.com.timasters.app.data.business.TimeEntryDao
 import br.com.timasters.app.data.local.AppDatabase
@@ -55,6 +57,12 @@ object DatabaseModule {
 
     @Provides
     fun provideCompanyProfileDao(db: AppDatabase): CompanyProfileDao = db.companyProfileDao()
+
+    @Provides
+    fun provideOrderPhotoDao(db: AppDatabase): OrderPhotoDao = db.orderPhotoDao()
+
+    @Provides
+    fun provideStockMovementDao(db: AppDatabase): StockMovementDao = db.stockMovementDao()
 
     @Provides
     fun provideSpeedTestDao(db: AppDatabase): SpeedTestDao = db.speedTestDao()

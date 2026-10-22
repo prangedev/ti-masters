@@ -11,6 +11,7 @@ import br.com.timasters.app.core.format.MoneyInput
 import br.com.timasters.app.data.business.BusinessFiles
 import br.com.timasters.app.data.business.ClientDao
 import br.com.timasters.app.data.business.OrderKind
+import br.com.timasters.app.data.business.OrderPhotoDao
 import br.com.timasters.app.data.business.OrderRepository
 import br.com.timasters.app.data.business.ServiceOrderEntity
 import br.com.timasters.app.data.business.TicketDao
@@ -33,6 +34,7 @@ class OrderDocuments @Inject constructor(
     private val repository: OrderRepository,
     private val clientDao: ClientDao,
     private val ticketDao: TicketDao,
+    private val photoDao: OrderPhotoDao,
     private val files: BusinessFiles
 ) {
     /** Returns the PDF file, or null if the record no longer exists. */
@@ -46,6 +48,7 @@ class OrderDocuments @Inject constructor(
             order.id,
             BusinessFiles.pdfFileName(kind, order.number?.toString() ?: order.id.take(8), company?.name.orEmpty())
         )
+        val photos = photoDao.activeByOrder(order.id).sortedBy { it.photoStage.ordinal }
         withContext(Dispatchers.IO) {
             OrderPdfWriter(context).write(
                 OrderPdfData(
@@ -55,7 +58,12 @@ class OrderDocuments @Inject constructor(
                     settings = repository.pricingSettingsNow(order.companyId),
                     logo = files.loadLogo(order.companyId),
                     ticketLabel = ticket?.let { t -> t.number?.let { "#$it · ${t.title}" } ?: t.title },
-                    zone = ZoneId.systemDefault()
+                    zone = ZoneId.systemDefault(),
+                    // Small copies keep the PDF light enough for WhatsApp.
+                    photos = photos.mapNotNull { photo ->
+                        files.loadScaled(files.photoFile(photo.orderId, photo.id), PDF_PHOTO_SIDE)?.let { photo.photoStage to it }
+                    },
+                    signature = files.signatureFile(order)?.let { files.loadScaled(it, PDF_SIGNATURE_WIDTH) }
                 ),
                 file
             )
@@ -118,6 +126,8 @@ class OrderDocuments @Inject constructor(
 
     private companion object {
         const val PDF_MIME = "application/pdf"
+        const val PDF_PHOTO_SIDE = 480
+        const val PDF_SIGNATURE_WIDTH = 600
         val WHATSAPP_PACKAGES = listOf("com.whatsapp", "com.whatsapp.w4b")
     }
 }

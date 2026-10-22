@@ -2,9 +2,11 @@ package br.com.timasters.app.data.business.sync
 
 import br.com.timasters.app.core.time.IsoTime
 import br.com.timasters.app.data.business.CompanyProfileEntity
+import br.com.timasters.app.data.business.OrderPhotoEntity
 import br.com.timasters.app.data.business.PricingSettingsEntity
 import br.com.timasters.app.data.business.ServiceItemEntity
 import br.com.timasters.app.data.business.ServiceOrderEntity
+import br.com.timasters.app.data.business.StockMovementEntity
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -22,6 +24,9 @@ data class ServiceItemPush(
     val unit: String,
     @SerialName("price_cents") val priceCents: Long,
     val active: Boolean,
+    @SerialName("track_stock") val trackStock: Boolean,
+    @SerialName("min_stock") val minStock: Double,
+    @SerialName("cost_cents") val costCents: Long,
     @SerialName("deleted_at") val deletedAt: String?
 )
 
@@ -35,6 +40,9 @@ data class ServiceItemRow(
     val unit: String,
     @SerialName("price_cents") val priceCents: Long,
     val active: Boolean = true,
+    @SerialName("track_stock") val trackStock: Boolean = false,
+    @SerialName("min_stock") val minStock: Double = 0.0,
+    @SerialName("cost_cents") val costCents: Long = 0,
     @SerialName("created_at") val createdAt: String,
     @SerialName("updated_at") val updatedAt: String,
     @SerialName("deleted_at") val deletedAt: String? = null
@@ -93,6 +101,10 @@ data class ServiceOrderPush(
     @SerialName("valid_until") val validUntil: String?,
     @SerialName("pdf_path") val pdfPath: String?,
     @SerialName("sent_at") val sentAt: String?,
+    @SerialName("completed_at") val completedAt: String?,
+    @SerialName("signature_path") val signaturePath: String?,
+    @SerialName("signed_by") val signedBy: String?,
+    @SerialName("signed_at") val signedAt: String?,
     @SerialName("deleted_at") val deletedAt: String?
 )
 
@@ -120,6 +132,60 @@ data class ServiceOrderRow(
     @SerialName("valid_until") val validUntil: String? = null,
     @SerialName("pdf_path") val pdfPath: String? = null,
     @SerialName("sent_at") val sentAt: String? = null,
+    @SerialName("completed_at") val completedAt: String? = null,
+    @SerialName("signature_path") val signaturePath: String? = null,
+    @SerialName("signed_by") val signedBy: String? = null,
+    @SerialName("signed_at") val signedAt: String? = null,
+    @SerialName("created_at") val createdAt: String,
+    @SerialName("updated_at") val updatedAt: String,
+    @SerialName("deleted_at") val deletedAt: String? = null
+)
+
+@Serializable
+data class OrderPhotoPush(
+    val id: String,
+    @SerialName("company_id") val companyId: String,
+    @SerialName("order_id") val orderId: String,
+    val stage: String,
+    @SerialName("storage_path") val storagePath: String?,
+    @SerialName("deleted_at") val deletedAt: String?
+)
+
+@Serializable
+data class OrderPhotoRow(
+    val id: String,
+    @SerialName("company_id") val companyId: String,
+    @SerialName("order_id") val orderId: String,
+    val stage: String,
+    @SerialName("storage_path") val storagePath: String? = null,
+    @SerialName("created_at") val createdAt: String,
+    @SerialName("updated_at") val updatedAt: String,
+    @SerialName("deleted_at") val deletedAt: String? = null
+)
+
+@Serializable
+data class StockMovementPush(
+    val id: String,
+    @SerialName("company_id") val companyId: String,
+    @SerialName("item_id") val itemId: String,
+    @SerialName("order_id") val orderId: String?,
+    val kind: String,
+    val quantity: Double,
+    @SerialName("unit_cost_cents") val unitCostCents: Long,
+    val note: String?,
+    @SerialName("deleted_at") val deletedAt: String?
+)
+
+@Serializable
+data class StockMovementRow(
+    val id: String,
+    @SerialName("company_id") val companyId: String,
+    @SerialName("item_id") val itemId: String,
+    @SerialName("order_id") val orderId: String? = null,
+    val kind: String,
+    val quantity: Double,
+    @SerialName("unit_cost_cents") val unitCostCents: Long = 0,
+    val note: String? = null,
     @SerialName("created_at") val createdAt: String,
     @SerialName("updated_at") val updatedAt: String,
     @SerialName("deleted_at") val deletedAt: String? = null
@@ -157,11 +223,14 @@ private val lenientJson = Json { ignoreUnknownKeys = true }
 private fun Long?.iso(): String? = this?.let(IsoTime::format)
 private fun String.millis(): Long = IsoTime.parse(this) ?: 0L
 
-fun ServiceItemEntity.toPush() = ServiceItemPush(id, companyId, name, description, kind, unit, priceCents, active, deletedAt.iso())
+fun ServiceItemEntity.toPush() = ServiceItemPush(
+    id, companyId, name, description, kind, unit, priceCents, active, trackStock, minStock, costCents, deletedAt.iso()
+)
 
 fun ServiceItemRow.toEntity() = ServiceItemEntity(
     id = id, companyId = companyId, name = name, description = description, kind = kind, unit = unit,
-    priceCents = priceCents, active = active, createdAt = createdAt.millis(), updatedAt = updatedAt.millis(),
+    priceCents = priceCents, active = active, trackStock = trackStock, minStock = minStock, costCents = costCents,
+    createdAt = createdAt.millis(), updatedAt = updatedAt.millis(),
     serverUpdatedAt = updatedAt, isDirty = false, deletedAt = IsoTime.parse(deletedAt)
 )
 
@@ -184,7 +253,8 @@ fun ServiceOrderEntity.toPush() = ServiceOrderPush(
     itemsCents = itemsCents, laborMinutes = laborMinutes, hourlyRateCents = hourlyRateCents, laborCents = laborCents,
     urgencyPercent = urgencyPercent, urgencyCents = urgencyCents, travelFeeCents = travelFeeCents,
     discountCents = discountCents, totalCents = totalCents, notes = notes, validUntil = validUntil.iso(),
-    pdfPath = pdfPath, sentAt = sentAt.iso(), deletedAt = deletedAt.iso()
+    pdfPath = pdfPath, sentAt = sentAt.iso(), completedAt = completedAt.iso(), signaturePath = signaturePath,
+    signedBy = signedBy, signedAt = signedAt.iso(), deletedAt = deletedAt.iso()
 )
 
 /** [pendingPdf] keeps the local "PDF still to upload" flag, which the server knows nothing about. */
@@ -195,6 +265,8 @@ fun ServiceOrderRow.toEntity(pendingPdf: Boolean = false) = ServiceOrderEntity(
     urgencyPercent = urgencyPercent, urgencyCents = urgencyCents, travelFeeCents = travelFeeCents,
     discountCents = discountCents, totalCents = totalCents, notes = notes, validUntil = IsoTime.parse(validUntil),
     pdfPath = pdfPath, pdfPendingUpload = pendingPdf, sentAt = IsoTime.parse(sentAt),
+    completedAt = IsoTime.parse(completedAt), signaturePath = signaturePath, signedBy = signedBy,
+    signedAt = IsoTime.parse(signedAt), signaturePendingUpload = false,
     createdAt = createdAt.millis(), updatedAt = updatedAt.millis(), serverUpdatedAt = updatedAt,
     isDirty = false, deletedAt = IsoTime.parse(deletedAt)
 )
@@ -205,4 +277,22 @@ fun CompanyRow.toEntity() = CompanyProfileEntity(
     id = id, name = name, document = document, phone = phone, email = email, address = address, city = city,
     primaryColor = primaryColor, logoPath = logoPath, logoPendingUpload = false,
     updatedAt = updatedAt.millis(), serverUpdatedAt = updatedAt, isDirty = false
+)
+
+fun OrderPhotoEntity.toPush() = OrderPhotoPush(id, companyId, orderId, stage, storagePath, deletedAt.iso())
+
+fun OrderPhotoRow.toEntity() = OrderPhotoEntity(
+    id = id, companyId = companyId, orderId = orderId, stage = stage, storagePath = storagePath,
+    pendingUpload = false, createdAt = createdAt.millis(), updatedAt = updatedAt.millis(),
+    serverUpdatedAt = updatedAt, isDirty = false, deletedAt = IsoTime.parse(deletedAt)
+)
+
+fun StockMovementEntity.toPush() = StockMovementPush(
+    id, companyId, itemId, orderId, kind, quantity, unitCostCents, note, deletedAt.iso()
+)
+
+fun StockMovementRow.toEntity() = StockMovementEntity(
+    id = id, companyId = companyId, itemId = itemId, orderId = orderId, kind = kind, quantity = quantity,
+    unitCostCents = unitCostCents, note = note, createdAt = createdAt.millis(), updatedAt = updatedAt.millis(),
+    serverUpdatedAt = updatedAt, isDirty = false, deletedAt = IsoTime.parse(deletedAt)
 )

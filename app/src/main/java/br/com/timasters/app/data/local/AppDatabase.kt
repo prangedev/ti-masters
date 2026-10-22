@@ -9,12 +9,16 @@ import br.com.timasters.app.data.business.ClientDao
 import br.com.timasters.app.data.business.ClientEntity
 import br.com.timasters.app.data.business.CompanyProfileDao
 import br.com.timasters.app.data.business.CompanyProfileEntity
+import br.com.timasters.app.data.business.OrderPhotoDao
+import br.com.timasters.app.data.business.OrderPhotoEntity
 import br.com.timasters.app.data.business.PricingSettingsDao
 import br.com.timasters.app.data.business.PricingSettingsEntity
 import br.com.timasters.app.data.business.ServiceItemDao
 import br.com.timasters.app.data.business.ServiceItemEntity
 import br.com.timasters.app.data.business.ServiceOrderDao
 import br.com.timasters.app.data.business.ServiceOrderEntity
+import br.com.timasters.app.data.business.StockMovementDao
+import br.com.timasters.app.data.business.StockMovementEntity
 import br.com.timasters.app.data.business.TicketDao
 import br.com.timasters.app.data.business.TicketEntity
 import br.com.timasters.app.data.business.TimeEntryDao
@@ -26,6 +30,7 @@ import br.com.timasters.app.data.speedtest.SpeedTestResult
  * Version 3 is the first schema with real user data (Business, offline-first). From here on,
  * every schema change needs a Migration; the exported schemas live in app/schemas.
  * 3 → 4 (Business part 2) only adds tables, so Room generates it.
+ * 4 → 5 (Business part 3) adds tables and columns with defaults, also generated.
  */
 @Database(
     entities = [
@@ -37,11 +42,13 @@ import br.com.timasters.app.data.speedtest.SpeedTestResult
         PricingSettingsEntity::class,
         ServiceOrderEntity::class,
         CompanyProfileEntity::class,
+        OrderPhotoEntity::class,
+        StockMovementEntity::class,
         SpeedTestResult::class
     ],
-    version = 4,
+    version = 5,
     exportSchema = true,
-    autoMigrations = [AutoMigration(from = 3, to = 4)]
+    autoMigrations = [AutoMigration(from = 3, to = 4), AutoMigration(from = 4, to = 5)]
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun clientDao(): ClientDao
@@ -52,5 +59,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun pricingSettingsDao(): PricingSettingsDao
     abstract fun serviceOrderDao(): ServiceOrderDao
     abstract fun companyProfileDao(): CompanyProfileDao
+    abstract fun orderPhotoDao(): OrderPhotoDao
+    abstract fun stockMovementDao(): StockMovementDao
     abstract fun speedTestDao(): SpeedTestDao
 }

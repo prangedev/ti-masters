@@ -1,5 +1,6 @@
 package br.com.timasters.app.data.business
 
+import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.Index
@@ -23,6 +24,11 @@ data class ServiceItemEntity(
     val unit: String = "un",
     val priceCents: Long = 0,
     val active: Boolean = true,
+    /** Business part 3: products whose quantity is controlled by stock movements. */
+    @ColumnInfo(defaultValue = "0") val trackStock: Boolean = false,
+    @ColumnInfo(defaultValue = "0") val minStock: Double = 0.0,
+    /** What the company pays for one unit (gross profit on the dashboard). */
+    @ColumnInfo(defaultValue = "0") val costCents: Long = 0,
     val createdAt: Long,
     val updatedAt: Long,
     val serverUpdatedAt: String? = null,
@@ -82,6 +88,14 @@ data class ServiceOrderEntity(
     /** Local only: a PDF was generated here and still has to be uploaded. */
     val pdfPendingUpload: Boolean = false,
     val sentAt: Long? = null,
+    /** When the service order was concluded (dashboard month); null otherwise. */
+    val completedAt: Long? = null,
+    /** Storage path of the client's signature (PNG); a new name on every new signature. */
+    val signaturePath: String? = null,
+    val signedBy: String? = null,
+    val signedAt: Long? = null,
+    /** Local only: the signature was drawn (or removed) here and still has to be uploaded. */
+    @ColumnInfo(defaultValue = "0") val signaturePendingUpload: Boolean = false,
     val createdAt: Long,
     val updatedAt: Long,
     val serverUpdatedAt: String? = null,
@@ -123,9 +137,12 @@ data class OrderItem(
     val description: String,
     val unit: String = "un",
     val quantity: Double = 1.0,
-    @SerialName("unit_price_cents") val unitPriceCents: Long = 0
+    @SerialName("unit_price_cents") val unitPriceCents: Long = 0,
+    /** Catalog cost when the item was added (gross profit); 0 when unknown. */
+    @SerialName("unit_cost_cents") val unitCostCents: Long = 0
 ) {
     val totalCents: Long get() = Math.round(quantity * unitPriceCents)
+    val totalCostCents: Long get() = Math.round(quantity * unitCostCents)
 
     companion object {
         private val json = Json { ignoreUnknownKeys = true }

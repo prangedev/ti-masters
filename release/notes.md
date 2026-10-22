@@ -1,1 +1,6 @@
-- Novo: o app agora avisa quando sai uma versão nova e atualiza sozinho (Planos & Config > Versão do app).
+- Novo: o app avisa quando sai uma versão nova e atualiza sozinho (Planos & Config > Versão do app).
+- Business: aba Painel com faturamento do mês, lucro bruto, OS em aberto, aprovação de orçamentos, horas e melhores clientes.
+- Business: fotos de antes e depois nas OS e orçamentos (câmera ou galeria), incluídas no PDF.
+- Business: assinatura do cliente na tela, impressa no PDF com nome e data.
+- Business: estoque de peças com entrada, saída, contagem e baixa automática ao concluir a OS.
+- Correção: ao voltar de outro app (câmera, WhatsApp) depois de entrar na conta, o app não volta mais para a tela inicial.

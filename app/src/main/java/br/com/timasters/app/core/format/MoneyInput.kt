@@ -19,9 +19,10 @@ object MoneyInput {
     /** "2", "1,5", "0.25" → 1.5 etc. */
     fun parseQuantity(text: String): Double? = parseDecimal(text)?.toDouble()
 
-    /** 1.0 → "1", 1.5 → "1,5". */
+    /** 1.0 → "1", 1.5 → "1,5". Rounded to 3 decimals (stock sums of decimals drift slightly). */
     fun formatQuantity(value: Double): String =
-        BigDecimal.valueOf(value).stripTrailingZeros().toPlainString().replace('.', ',')
+        BigDecimal.valueOf(value).setScale(3, java.math.RoundingMode.HALF_UP).stripTrailingZeros()
+            .toPlainString().replace('.', ',').let { if (it == "-0") "0" else it }
 
     /** Hours typed as "1:30", "1h30", "1,5" or "2" → minutes. */
     fun parseHoursToMinutes(text: String): Int? {

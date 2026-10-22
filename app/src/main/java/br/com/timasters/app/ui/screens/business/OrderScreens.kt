@@ -210,8 +210,11 @@ fun OrderDetailScreen(
     LaunchedEffect(orderId) { viewModel.load(orderId) }
     val item by viewModel.order.collectAsStateWithLifecycle()
     val busy by viewModel.busy.collectAsStateWithLifecycle()
+    val photos by viewModel.photos.collectAsStateWithLifecycle()
+    val signature by viewModel.signature.collectAsStateWithLifecycle()
     var confirmDelete by rememberSaveable { mutableStateOf(false) }
     var message by rememberSaveable { mutableStateOf<Int?>(null) }
+    var photoMessage by rememberSaveable { mutableStateOf<Int?>(null) }
     val context = LocalContext.current
 
     LaunchedEffect(viewModel) {
@@ -226,6 +229,8 @@ fun OrderDetailScreen(
                 OrderEvent.NoWhatsApp -> message = R.string.order_no_whatsapp
                 OrderEvent.NoPhone -> message = R.string.order_no_phone
                 OrderEvent.PdfFailed -> message = R.string.order_pdf_failed
+                OrderEvent.PhotoInvalid -> photoMessage = R.string.photos_invalid
+                OrderEvent.PhotoLimit -> photoMessage = R.string.photos_limit
             }
         }
     }
@@ -283,6 +288,29 @@ fun OrderDetailScreen(
             }
 
             item { OrderValuesCard(order) }
+
+            item {
+                OrderPhotosSection(
+                    photos = photos,
+                    newCameraFile = viewModel::newCameraFile,
+                    cameraUri = viewModel::cameraUri,
+                    onAdd = { stage, uri, temp -> photoMessage = null; viewModel.addPhoto(stage, uri, temp) },
+                    onDelete = viewModel::deletePhoto,
+                    onCameraMissing = { photoMessage = R.string.photos_no_camera }
+                )
+            }
+            photoMessage?.let { text -> item { MessageCard(text = stringResource(id = text), isError = true) } }
+
+            item {
+                OrderSignatureSection(
+                    signature = signature,
+                    signedBy = order.signedBy,
+                    signedAt = order.signedAt,
+                    defaultSigner = current.clientName,
+                    onSave = viewModel::saveSignature,
+                    onRemove = viewModel::removeSignature
+                )
+            }
 
             item {
                 OptionField(
@@ -413,6 +441,7 @@ fun OrderEditScreen(
     val catalog by viewModel.catalog.collectAsStateWithLifecycle()
     val tickets by viewModel.clientTickets.collectAsStateWithLifecycle()
     val ticketMinutes by viewModel.ticketMinutes.collectAsStateWithLifecycle()
+    val stock by viewModel.stock.collectAsStateWithLifecycle()
     /** -1 = new item, otherwise the index being edited. */
     var editingItem by rememberSaveable { mutableStateOf<Int?>(null) }
     var pickingFromCatalog by rememberSaveable { mutableStateOf(false) }
@@ -603,9 +632,17 @@ fun OrderEditScreen(
     if (pickingFromCatalog) {
         CatalogPickerDialog(
             items = catalog,
+            stock = stock,
             onPick = { picked ->
                 viewModel.addItem(
-                    OrderItem(catalogId = picked.id, description = picked.name, unit = picked.unit, quantity = 1.0, unitPriceCents = picked.priceCents)
+                    OrderItem(
+                        catalogId = picked.id,
+                        description = picked.name,
+                        unit = picked.unit,
+                        quantity = 1.0,
+                        unitPriceCents = picked.priceCents,
+                        unitCostCents = picked.costCents
+                    )
                 )
                 pickingFromCatalog = false
             },
@@ -723,7 +760,8 @@ private fun ItemDialog(initial: OrderItem?, onDismiss: () -> Unit, onConfirm: (O
                             description = description.trim(),
                             unit = unit.trim().ifEmpty { "un" },
                             quantity = parsedQuantity,
-                            unitPriceCents = parsedPrice
+                            unitPriceCents = parsedPrice,
+                            unitCostCents = initial?.unitCostCents ?: 0
                         )
                     )
                 }
@@ -736,6 +774,7 @@ private fun ItemDialog(initial: OrderItem?, onDismiss: () -> Unit, onConfirm: (O
 @Composable
 private fun CatalogPickerDialog(
     items: List<ServiceItemEntity>,
+    stock: Map<String, Double>,
     onPick: (ServiceItemEntity) -> Unit,
     onOpenCatalog: () -> Unit,
     onDismiss: () -> Unit
@@ -761,7 +800,14 @@ private fun CatalogPickerDialog(
                         items(filtered, key = { it.id }) { entry ->
                             ListItem(
                                 headlineContent = { Text(entry.name) },
-                                supportingContent = { Text("${MoneyInput.formatCents(entry.priceCents)} / ${entry.unit}") },
+                                supportingContent = {
+                                    val price = "${MoneyInput.formatCents(entry.priceCents)} / ${entry.unit}"
+                                    val inStock = stock[entry.id]
+                                    Text(
+                                        if (inStock == null) price
+                                        else price + " · " + stringResource(id = R.string.stock_in_stock, MoneyInput.formatQuantity(inStock), entry.unit)
+                                    )
+                                },
                                 modifier = Modifier.fillMaxWidth(),
                                 trailingContent = {
                                     TextButton(onClick = { onPick(entry) }) { Text(stringResource(id = R.string.add)) }

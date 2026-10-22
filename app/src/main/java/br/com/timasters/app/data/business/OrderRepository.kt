@@ -16,7 +16,12 @@ data class ServiceItemInput(
     val kind: ItemKind,
     val unit: String,
     val priceCents: Long,
-    val active: Boolean
+    val active: Boolean,
+    val trackStock: Boolean = false,
+    val minStock: Double = 0.0,
+    val costCents: Long = 0,
+    /** Only for new stock-controlled products: recorded as the first entry. */
+    val initialQuantity: Double = 0.0
 )
 
 data class PricingSettingsInput(
@@ -67,7 +72,9 @@ class OrderRepository @Inject constructor(
     private val serviceOrderDao: ServiceOrderDao,
     private val companyProfileDao: CompanyProfileDao,
     private val files: BusinessFiles,
-    private val syncScheduler: BusinessSyncScheduler
+    private val syncScheduler: BusinessSyncScheduler,
+    private val stock: StockRepository,
+    private val media: OrderMediaRepository
 ) {
     private fun now() = System.currentTimeMillis()
     private fun newId() = UUID.randomUUID().toString()
@@ -90,12 +97,18 @@ class OrderRepository @Inject constructor(
             unit = input.unit.trim().ifEmpty { "un" }.take(10),
             priceCents = input.priceCents,
             active = input.active,
+            trackStock = input.kind == ItemKind.PRODUCT && input.trackStock,
+            minStock = input.minStock.coerceIn(0.0, 1_000_000.0),
+            costCents = input.costCents,
             createdAt = existing?.createdAt ?: time,
             updatedAt = time,
             serverUpdatedAt = existing?.serverUpdatedAt,
             isDirty = true
         )
         serviceItemDao.upsert(entity)
+        if (existing == null && entity.trackStock && input.initialQuantity > 0) {
+            stock.addMovement(entity.id, StockMovementKind.IN, input.initialQuantity, entity.costCents, "")
+        }
         syncScheduler.requestSync()
         return entity.id
     }
@@ -182,12 +195,18 @@ class OrderRepository @Inject constructor(
             pdfPath = existing?.pdfPath,
             pdfPendingUpload = existing?.pdfPendingUpload ?: false,
             sentAt = existing?.sentAt,
+            completedAt = completedAt(existing, input.status, time),
+            signaturePath = existing?.signaturePath,
+            signedBy = existing?.signedBy,
+            signedAt = existing?.signedAt,
+            signaturePendingUpload = existing?.signaturePendingUpload ?: false,
             createdAt = existing?.createdAt ?: time,
             updatedAt = time,
             serverUpdatedAt = existing?.serverUpdatedAt,
             isDirty = true
         )
         serviceOrderDao.upsert(entity)
+        stock.syncOrderConsumption(entity)
         syncScheduler.requestSync()
         return entity.id
     }
@@ -195,9 +214,21 @@ class OrderRepository @Inject constructor(
     suspend fun setOrderStatus(id: String, status: OrderStatus) {
         val existing = serviceOrderDao.get(id) ?: return
         if (status.kind != existing.orderKind) return
-        serviceOrderDao.upsert(existing.copy(status = status.serverId, updatedAt = now(), isDirty = true))
+        val time = now()
+        val updated = existing.copy(
+            status = status.serverId,
+            completedAt = completedAt(existing, status, time),
+            updatedAt = time,
+            isDirty = true
+        )
+        serviceOrderDao.upsert(updated)
+        stock.syncOrderConsumption(updated)
         syncScheduler.requestSync()
     }
+
+    /** Keeps the first completion time while the service order stays concluded. */
+    private fun completedAt(existing: ServiceOrderEntity?, status: OrderStatus, time: Long): Long? =
+        if (status == OrderStatus.DONE) existing?.completedAt ?: time else null
 
     /**
      * Creates the service order of an approved quote (same items and prices) and marks the
@@ -217,6 +248,11 @@ class OrderRepository @Inject constructor(
             pdfPath = null,
             pdfPendingUpload = false,
             sentAt = null,
+            completedAt = null,
+            signaturePath = null,
+            signedBy = null,
+            signedAt = null,
+            signaturePendingUpload = false,
             createdAt = time,
             updatedAt = time,
             serverUpdatedAt = null,
@@ -248,8 +284,11 @@ class OrderRepository @Inject constructor(
     suspend fun deleteOrder(id: String) {
         val existing = serviceOrderDao.get(id) ?: return
         val time = now()
-        serviceOrderDao.upsert(existing.copy(deletedAt = time, updatedAt = time, isDirty = true))
+        val deleted = existing.copy(deletedAt = time, updatedAt = time, isDirty = true)
+        serviceOrderDao.upsert(deleted)
         files.deleteOrderPdf(id)
+        media.deleteAllOfOrder(id)
+        stock.syncOrderConsumption(deleted)
         syncScheduler.requestSync()
     }
 

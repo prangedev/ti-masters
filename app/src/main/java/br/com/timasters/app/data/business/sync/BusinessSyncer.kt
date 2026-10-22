@@ -9,9 +9,11 @@ import br.com.timasters.app.data.business.ClientDao
 import br.com.timasters.app.data.business.CompanyProfileDao
 import br.com.timasters.app.data.business.CompanyRepository
 import br.com.timasters.app.data.business.OrderKind
+import br.com.timasters.app.data.business.OrderPhotoDao
 import br.com.timasters.app.data.business.PricingSettingsDao
 import br.com.timasters.app.data.business.ServiceItemDao
 import br.com.timasters.app.data.business.ServiceOrderDao
+import br.com.timasters.app.data.business.StockMovementDao
 import br.com.timasters.app.data.business.TicketDao
 import br.com.timasters.app.data.business.TimeEntryDao
 import br.com.timasters.app.data.business.reminders.AppointmentReminderScheduler
@@ -60,6 +62,8 @@ class BusinessSyncer @Inject constructor(
     private val pricingSettingsDao: PricingSettingsDao,
     private val serviceOrderDao: ServiceOrderDao,
     private val companyProfileDao: CompanyProfileDao,
+    private val orderPhotoDao: OrderPhotoDao,
+    private val stockMovementDao: StockMovementDao,
     private val files: BusinessFiles,
     private val reminders: AppointmentReminderScheduler
 ) {
@@ -106,9 +110,59 @@ class BusinessSyncer @Inject constructor(
         upload("service_items", serviceItemDao.dirty(companyId), { it.toPush() }, { it.id to it.updatedAt }, serviceItemDao::markClean)
         upload("pricing_settings", pricingSettingsDao.dirty(companyId), { it.toPush() }, { it.id to it.updatedAt }, pricingSettingsDao::markClean)
         uploadOrderPdfs(companyId)
+        uploadSignatures(companyId)
         // Quotes first: a service order may point to the quote it came from.
         val orders = serviceOrderDao.dirty(companyId).sortedBy { if (it.orderKind == OrderKind.QUOTE) 0 else 1 }
         upload("service_orders", orders, { it.toPush() }, { it.id to it.updatedAt }, serviceOrderDao::markClean)
+        uploadPhotos(companyId)
+        upload("stock_movements", stockMovementDao.dirty(companyId), { it.toPush() }, { it.id to it.updatedAt }, stockMovementDao::markClean)
+    }
+
+    /** New or removed signatures; every new one gets a new name so other phones download it. */
+    private suspend fun uploadSignatures(companyId: String) {
+        val bucket = supabase.storage.from(BusinessFiles.MEDIA_BUCKET)
+        serviceOrderDao.pendingSignatureUploads(companyId).forEach { order ->
+            val local = files.localSignatureFile(order.id)
+            val path = if (local.exists()) {
+                val newPath = BusinessFiles.signatureStoragePath(companyId, order.id, System.currentTimeMillis())
+                val bytes = withContext(Dispatchers.IO) { local.readBytes() }
+                bucket.upload(newPath, bytes) { upsert = true }
+                newPath
+            } else {
+                null
+            }
+            if (serviceOrderDao.markSignatureUploaded(order.id, path, order.updatedAt, System.currentTimeMillis()) > 0) {
+                if (path != null) {
+                    val synced = files.syncedSignatureFile(order.id, path)
+                    local.renameTo(synced)
+                    files.clearSignatures(order.id, keep = synced)
+                } else {
+                    files.clearSignatures(order.id)
+                }
+                order.signaturePath?.takeIf { it != path }?.let { old -> runCatching { bucket.delete(old) } }
+            } else if (path != null) {
+                // Drawn again during the upload: this file is already outdated.
+                runCatching { bucket.delete(path) }
+            }
+        }
+    }
+
+    /** JPEGs first, then the rows; a deleted photo also loses its file on the server. */
+    private suspend fun uploadPhotos(companyId: String) {
+        val bucket = supabase.storage.from(BusinessFiles.MEDIA_BUCKET)
+        orderPhotoDao.pendingUploads(companyId).forEach { photo ->
+            val file = files.photoFile(photo.orderId, photo.id)
+            if (!file.exists()) return@forEach
+            val path = BusinessFiles.photoStoragePath(companyId, photo.orderId, photo.id)
+            val bytes = withContext(Dispatchers.IO) { file.readBytes() }
+            bucket.upload(path, bytes) { upsert = true }
+            orderPhotoDao.markUploaded(photo.id, path, photo.updatedAt, System.currentTimeMillis())
+        }
+        val rows = orderPhotoDao.dirty(companyId).filter { !it.pendingUpload || it.deletedAt != null }
+        upload("order_photos", rows, { it.toPush() }, { it.id to it.updatedAt }, orderPhotoDao::markClean)
+        rows.filter { it.deletedAt != null }.mapNotNull { it.storagePath }.takeIf { it.isNotEmpty() }?.let { paths ->
+            runCatching { bucket.delete(paths) }
+        }
     }
 
     /** Company name, contacts and brand; a new logo is uploaded first under a new name. */
@@ -188,9 +242,51 @@ class BusinessSyncer @Inject constructor(
         }
         download<ServiceOrderRow>(companyId, "service_orders", { it.updatedAt }) { rows ->
             val dirty = serviceOrderDao.dirtyIds(rows.map { it.id }).toSet()
-            serviceOrderDao.upsertAll(rows.filterNot { it.id in dirty }.map { it.toEntity() })
+            val applied = rows.filterNot { it.id in dirty }
+            serviceOrderDao.upsertAll(applied.map { it.toEntity() })
+            applied.filter { it.signaturePath == null || it.deletedAt != null }.forEach { files.clearSignatures(it.id) }
         }
+        download<OrderPhotoRow>(companyId, "order_photos", { it.updatedAt }) { rows ->
+            val dirty = orderPhotoDao.dirtyIds(rows.map { it.id }).toSet()
+            val applied = rows.filterNot { it.id in dirty }
+            orderPhotoDao.upsertAll(applied.map { it.toEntity() })
+            applied.filter { it.deletedAt != null }.forEach { files.deletePhoto(it.orderId, it.id) }
+        }
+        download<StockMovementRow>(companyId, "stock_movements", { it.updatedAt }) { rows ->
+            val dirty = stockMovementDao.dirtyIds(rows.map { it.id }).toSet()
+            stockMovementDao.upsertAll(rows.filterNot { it.id in dirty }.map { it.toEntity() })
+        }
+        downloadMissingMedia(companyId)
         pullCompany(companyId)
+    }
+
+    /**
+     * Photos and signatures made on other phones. A few per sync, so one sync never takes long;
+     * the rest come in the next ones.
+     */
+    private suspend fun downloadMissingMedia(companyId: String) {
+        val bucket = supabase.storage.from(BusinessFiles.MEDIA_BUCKET)
+        var budget = MEDIA_PER_SYNC
+        for (order in serviceOrderDao.signed(companyId)) {
+            if (budget <= 0) return
+            val path = order.signaturePath ?: continue
+            val target = files.syncedSignatureFile(order.id, path)
+            if (target.exists()) continue
+            val bytes = runCatching { bucket.downloadAuthenticated(path) }.getOrNull() ?: continue
+            withContext(Dispatchers.IO) {
+                target.parentFile?.mkdirs()
+                target.writeBytes(bytes)
+            }
+            files.clearSignatures(order.id, keep = target)
+            budget--
+        }
+        for (photo in orderPhotoDao.uploaded(companyId)) {
+            if (budget <= 0) return
+            if (files.photoFile(photo.orderId, photo.id).exists()) continue
+            val bytes = runCatching { bucket.downloadAuthenticated(photo.storagePath!!) }.getOrNull() ?: continue
+            withContext(Dispatchers.IO) { files.writePhotoBytes(photo.orderId, photo.id, bytes) }
+            budget--
+        }
     }
 
     /** One row, always downloaded; the logo file is fetched only when its name changed. */
@@ -249,5 +345,6 @@ class BusinessSyncer @Inject constructor(
         const val PUSH_BATCH = 200
         const val PULL_PAGE = 500L
         const val CURSOR_OVERLAP_MILLIS = 120_000L
+        const val MEDIA_PER_SYNC = 40
     }
 }

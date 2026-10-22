@@ -19,6 +19,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.buildJsonObject
@@ -49,11 +51,20 @@ class AuthRepository @Inject constructor(
     private val auth get() = supabase.auth
 
     private val recoveryPending = MutableStateFlow(false)
+
+    /** Last real state, shared by every collector (see [authState]). */
+    @Volatile
+    private var lastKnownState: AuthState? = null
     private val _pendingLinkError = MutableStateFlow<AuthError?>(null)
 
     /** Set when an e-mail link could not be used (expired, already used, opened on another phone). */
     val pendingLinkError: StateFlow<AuthError?> = _pendingLinkError.asStateFlow()
 
+    /**
+     * Supabase reports "initializing" again when the app returns to the foreground after a sign-in
+     * made in the same run. Only the first one is real: later ones keep the previous state, or the
+     * whole app would be rebuilt (open screens and typed text lost) on every return.
+     */
     val authState: Flow<AuthState> = combine(auth.sessionStatus, recoveryPending) { status, recovery ->
         when (status) {
             SessionStatus.Initializing -> AuthState.Loading
@@ -75,6 +86,15 @@ class AuthRepository @Inject constructor(
             }
         }
     }
+        .map { next ->
+            if (next == AuthState.Loading) {
+                lastKnownState ?: next
+            } else {
+                lastKnownState = next
+                next
+            }
+        }
+        .distinctUntilChanged()
 
     fun currentUserId(): String? = auth.currentUserOrNull()?.id
 

@@ -34,6 +34,8 @@ sealed interface BusinessRoute {
     data class CompanySettings(val session: String = newSession()) : BusinessRoute
     data object Catalog : BusinessRoute
     data class CatalogItemEdit(val id: String?, val session: String = newSession()) : BusinessRoute
+    data object Stock : BusinessRoute
+    data class StockItem(val id: String) : BusinessRoute
 }
 
 private fun newSession(): String = UUID.randomUUID().toString()
@@ -51,6 +53,8 @@ private fun BusinessRoute.encode(): String = when (this) {
     is BusinessRoute.CompanySettings -> "company|$session"
     BusinessRoute.Catalog -> "catalog"
     is BusinessRoute.CatalogItemEdit -> "catalog_edit|${id.orEmpty()}|$session"
+    BusinessRoute.Stock -> "stock"
+    is BusinessRoute.StockItem -> "stock_item|$id"
 }
 
 private fun decode(value: String): BusinessRoute {
@@ -68,6 +72,8 @@ private fun decode(value: String): BusinessRoute {
         "company" -> BusinessRoute.CompanySettings(arg(1) ?: newSession())
         "catalog" -> BusinessRoute.Catalog
         "catalog_edit" -> BusinessRoute.CatalogItemEdit(arg(1), arg(2) ?: newSession())
+        "stock" -> BusinessRoute.Stock
+        "stock_item" -> BusinessRoute.StockItem(arg(1).orEmpty())
         else -> BusinessRoute.Home
     }
 }

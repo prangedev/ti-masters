@@ -1,12 +1,14 @@
 package br.com.timasters.app.ui.viewmodel
 
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.timasters.app.core.format.MoneyInput
 import br.com.timasters.app.core.validation.AuthInputValidator
 import br.com.timasters.app.core.validation.DocumentValidator
+import br.com.timasters.app.data.business.AddPhotoResult
 import br.com.timasters.app.data.business.BusinessFiles
 import br.com.timasters.app.data.business.BusinessRepository
 import br.com.timasters.app.data.business.ClientEntity
@@ -18,14 +20,18 @@ import br.com.timasters.app.data.business.OrderCalculator
 import br.com.timasters.app.data.business.OrderInput
 import br.com.timasters.app.data.business.OrderItem
 import br.com.timasters.app.data.business.OrderKind
+import br.com.timasters.app.data.business.OrderMediaRepository
+import br.com.timasters.app.data.business.OrderPhotoEntity
 import br.com.timasters.app.data.business.OrderRepository
 import br.com.timasters.app.data.business.OrderStatus
+import br.com.timasters.app.data.business.PhotoStage
 import br.com.timasters.app.data.business.PricingInput
 import br.com.timasters.app.data.business.PricingResult
 import br.com.timasters.app.data.business.PricingSettingsInput
 import br.com.timasters.app.data.business.ServiceItemEntity
 import br.com.timasters.app.data.business.ServiceItemInput
 import br.com.timasters.app.data.business.ServiceOrderWithClient
+import br.com.timasters.app.data.business.StockRepository
 import br.com.timasters.app.data.business.TicketPriority
 import br.com.timasters.app.data.business.TicketWithClient
 import br.com.timasters.app.data.business.pdf.OrderDocuments
@@ -50,6 +56,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.io.File
 import java.time.LocalDate
 import java.time.LocalTime
 import javax.inject.Inject
@@ -113,7 +120,12 @@ sealed interface OrderEvent {
     data object NoWhatsApp : OrderEvent
     data object NoPhone : OrderEvent
     data object PdfFailed : OrderEvent
+    data object PhotoInvalid : OrderEvent
+    data object PhotoLimit : OrderEvent
 }
+
+/** A photo with its local file (null while it is still being downloaded from the cloud). */
+data class OrderPhotoItem(val photo: OrderPhotoEntity, val path: String?)
 
 enum class SendChannel { WHATSAPP_PDF, WHATSAPP_TEXT, SHARE, VIEW }
 
@@ -121,13 +133,24 @@ enum class SendChannel { WHATSAPP_PDF, WHATSAPP_TEXT, SHARE, VIEW }
 @HiltViewModel
 class OrderDetailViewModel @Inject constructor(
     private val repository: OrderRepository,
-    private val documents: OrderDocuments
+    private val documents: OrderDocuments,
+    private val media: OrderMediaRepository,
+    private val files: BusinessFiles
 ) : ViewModel() {
 
     private val orderId = MutableStateFlow<String?>(null)
 
     val order: StateFlow<ServiceOrderWithClient?> = orderId.filterNotNull().flatMapLatest(repository::order)
         .stateIn(viewModelScope, WHILE_SUBSCRIBED_ORDERS, null)
+
+    val photos: StateFlow<List<OrderPhotoItem>> = orderId.filterNotNull().flatMapLatest(media::photos)
+        .map { list -> list.map { OrderPhotoItem(it, media.photoFile(it).takeIf(File::exists)?.path) } }
+        .stateIn(viewModelScope, WHILE_SUBSCRIBED_ORDERS, emptyList())
+
+    /** Local file of the client's signature plus the time it was saved (forces the image to reload). */
+    val signature: StateFlow<Pair<String, Long>?> = order.map { current ->
+        current?.order?.let { o -> media.signatureFile(o)?.let { it.path to (o.signedAt ?: 0L) } }
+    }.stateIn(viewModelScope, WHILE_SUBSCRIBED_ORDERS, null)
 
     private val _busy = MutableStateFlow(false)
     val busy: StateFlow<Boolean> = _busy.asStateFlow()
@@ -198,6 +221,37 @@ class OrderDetailViewModel @Inject constructor(
             onDeleted()
         }
     }
+
+    /** Where the camera app writes the photo; the screen keeps the path across a process restart. */
+    fun newCameraFile(): File = files.newCameraFile()
+
+    fun cameraUri(file: File): Uri = files.shareUri(file)
+
+    fun addPhoto(stage: PhotoStage, source: Uri, temporaryFile: File? = null) {
+        val id = orderId.value ?: return
+        viewModelScope.launch {
+            when (media.addPhoto(id, stage, source)) {
+                AddPhotoResult.ADDED -> Unit
+                AddPhotoResult.NOT_AN_IMAGE -> _events.send(OrderEvent.PhotoInvalid)
+                AddPhotoResult.LIMIT_REACHED -> _events.send(OrderEvent.PhotoLimit)
+            }
+            temporaryFile?.delete()
+        }
+    }
+
+    fun deletePhoto(photoId: String) {
+        viewModelScope.launch { media.deletePhoto(photoId) }
+    }
+
+    fun saveSignature(signature: Bitmap, signer: String) {
+        val id = orderId.value ?: return
+        viewModelScope.launch { media.saveSignature(id, signature, signer) }
+    }
+
+    fun removeSignature() {
+        val id = orderId.value ?: return
+        viewModelScope.launch { media.removeSignature(id) }
+    }
 }
 
 // endregion
@@ -264,7 +318,8 @@ data class OrderForm(
 class OrderEditViewModel @Inject constructor(
     private val companyRepository: CompanyRepository,
     private val repository: OrderRepository,
-    private val businessRepository: BusinessRepository
+    private val businessRepository: BusinessRepository,
+    stockRepository: StockRepository
 ) : ViewModel() {
 
     private val _form = MutableStateFlow(OrderForm())
@@ -279,6 +334,11 @@ class OrderEditViewModel @Inject constructor(
     val catalog: StateFlow<List<ServiceItemEntity>> = companyId.flatMapLatest(repository::catalog)
         .map { list -> list.filter { it.active } }
         .stateIn(viewModelScope, WHILE_SUBSCRIBED_ORDERS, emptyList())
+
+    /** Quantity in stock of each stock-controlled product, shown when picking from the catalog. */
+    val stock: StateFlow<Map<String, Double>> = companyId.flatMapLatest(stockRepository::levels)
+        .map { levels -> levels.associate { it.item.id to it.quantity } }
+        .stateIn(viewModelScope, WHILE_SUBSCRIBED_ORDERS, emptyMap())
 
     val clientTickets: StateFlow<List<TicketWithClient>> = _form
         .map { it.clientId }
@@ -440,14 +500,25 @@ data class CatalogItemForm(
     val unit: String = "un",
     val price: String = "",
     val active: Boolean = true,
+    val cost: String = "",
+    val trackStock: Boolean = false,
+    val minStock: String = "",
+    val initialQuantity: String = "",
     val isExisting: Boolean = false,
     val showErrors: Boolean = false,
     val isLoaded: Boolean = false
 ) {
     val priceCents: Long? get() = MoneyInput.parseCents(price)
+    val costCents: Long? get() = if (cost.isBlank()) 0 else MoneyInput.parseCents(cost)
+    val minStockValue: Double? get() = if (minStock.isBlank()) 0.0 else MoneyInput.parseQuantity(minStock)?.takeIf { it >= 0 }
+    val initialQuantityValue: Double? get() = if (initialQuantity.isBlank()) 0.0 else MoneyInput.parseQuantity(initialQuantity)?.takeIf { it >= 0 }
+    val stockApplies: Boolean get() = kind == ItemKind.PRODUCT && trackStock
     val nameError: Boolean get() = name.isBlank()
     val priceError: Boolean get() = priceCents == null
-    val isValid: Boolean get() = !nameError && !priceError
+    val costError: Boolean get() = costCents == null
+    val minStockError: Boolean get() = stockApplies && minStockValue == null
+    val initialQuantityError: Boolean get() = stockApplies && !isExisting && initialQuantityValue == null
+    val isValid: Boolean get() = !nameError && !priceError && !costError && !minStockError && !initialQuantityError
 }
 
 @HiltViewModel
@@ -476,6 +547,9 @@ class CatalogItemEditViewModel @Inject constructor(
                     unit = existing.unit,
                     price = MoneyInput.centsToInput(existing.priceCents),
                     active = existing.active,
+                    cost = existing.costCents.takeIf { it > 0 }?.let(MoneyInput::centsToInput).orEmpty(),
+                    trackStock = existing.trackStock,
+                    minStock = existing.minStock.takeIf { it > 0 }?.let(MoneyInput::formatQuantity).orEmpty(),
                     isExisting = true,
                     isLoaded = true
                 )
@@ -498,7 +572,18 @@ class CatalogItemEditViewModel @Inject constructor(
             repository.saveCatalogItem(
                 company,
                 editingId,
-                ServiceItemInput(form.name, form.description, form.kind, form.unit, form.priceCents!!, form.active)
+                ServiceItemInput(
+                    name = form.name,
+                    description = form.description,
+                    kind = form.kind,
+                    unit = form.unit,
+                    priceCents = form.priceCents!!,
+                    active = form.active,
+                    trackStock = form.stockApplies,
+                    minStock = form.minStockValue ?: 0.0,
+                    costCents = form.costCents ?: 0,
+                    initialQuantity = form.initialQuantityValue ?: 0.0
+                )
             )
             onSaved()
         }

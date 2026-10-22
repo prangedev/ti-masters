@@ -14,7 +14,7 @@ import javax.inject.Singleton
 
 /**
  * Account deletion (LGPD). The database removes the rows by itself, but Storage files must be
- * deleted through the Storage API, so this runs first: logos and PDFs of every company the user
+ * deleted through the Storage API, so this runs first: logos, PDFs, photos and signatures of every company the user
  * owns. Then, after the account is gone, the copies kept on this phone are erased too.
  */
 @Singleton
@@ -28,14 +28,26 @@ class AccountDataEraser @Inject constructor(
         val companies = supabase.postgrest.rpc("get_my_owned_companies").decodeList<String>()
         companies.forEach { companyId ->
             listOf(BusinessFiles.LOGO_BUCKET, BusinessFiles.ORDERS_BUCKET).forEach { bucket ->
-                val api = supabase.storage.from(bucket)
-                while (true) {
-                    val names = api.list(companyId) { limit = PAGE }.map { "$companyId/${it.name}" }
-                    if (names.isEmpty()) break
-                    api.delete(names)
-                    if (names.size < PAGE) break
-                }
+                deleteFolder(bucket, companyId)
             }
+            // Photos and signatures sit one level deeper: "<company>/<order>/<file>".
+            val media = supabase.storage.from(BusinessFiles.MEDIA_BUCKET)
+            while (true) {
+                val folders = media.list(companyId) { limit = PAGE }.map { it.name }
+                if (folders.isEmpty()) break
+                folders.forEach { deleteFolder(BusinessFiles.MEDIA_BUCKET, "$companyId/$it") }
+                if (folders.size < PAGE) break
+            }
+        }
+    }
+
+    private suspend fun deleteFolder(bucket: String, folder: String) {
+        val api = supabase.storage.from(bucket)
+        while (true) {
+            val names = api.list(folder) { limit = PAGE }.map { "$folder/${it.name}" }
+            if (names.isEmpty()) break
+            api.delete(names)
+            if (names.size < PAGE) break
         }
     }
 
@@ -43,6 +55,7 @@ class AccountDataEraser @Inject constructor(
         database.clearAllTables()
         File(context.filesDir, "branding").deleteRecursively()
         File(context.filesDir, "orders").deleteRecursively()
+        File(context.filesDir, BusinessFiles.MEDIA_DIR).deleteRecursively()
     }
 
     private companion object {

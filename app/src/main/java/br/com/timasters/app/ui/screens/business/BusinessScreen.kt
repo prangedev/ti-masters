@@ -52,7 +52,9 @@ import br.com.timasters.app.ui.viewmodel.BusinessHomeViewModel
 import br.com.timasters.app.ui.viewmodel.CompanyState
 import br.com.timasters.app.ui.viewmodel.SyncInfo
 
-private enum class BusinessTab(@param:StringRes val titleResId: Int, @param:StringRes val addResId: Int) {
+/** [addResId] is the floating button of the tab (null: no button). */
+private enum class BusinessTab(@param:StringRes val titleResId: Int, @param:StringRes val addResId: Int?) {
+    DASHBOARD(R.string.business_tab_dashboard, null),
     TICKETS(R.string.business_tab_tickets, R.string.ticket_new),
     CLIENTS(R.string.business_tab_clients, R.string.client_new),
     AGENDA(R.string.business_tab_agenda, R.string.appointment_new),
@@ -80,7 +82,7 @@ fun BusinessScreen(
 private fun BusinessNavHost(modifier: Modifier = Modifier) {
     var stack by rememberSaveable(stateSaver = BusinessBackStackSaver) { mutableStateOf(listOf<BusinessRoute>(BusinessRoute.Home)) }
     // Kept here (always composed) so returning from a detail screen shows the same tab.
-    var selectedTab by rememberSaveable { mutableStateOf(BusinessTab.TICKETS) }
+    var selectedTab by rememberSaveable { mutableStateOf(BusinessTab.DASHBOARD) }
     val navigate: (BusinessRoute) -> Unit = { stack = stack + it }
     val back: () -> Unit = { if (stack.size > 1) stack = stack.dropLast(1) }
     /** Leaves an edit screen and shows the saved record instead (no way "back" into the form). */
@@ -136,6 +138,20 @@ private fun BusinessNavHost(modifier: Modifier = Modifier) {
         )
         BusinessRoute.Catalog -> CatalogScreen(
             onOpenItem = { id -> navigate(BusinessRoute.CatalogItemEdit(id)) },
+            onOpenStock = { navigate(BusinessRoute.Stock) },
+            onBack = back,
+            modifier = modifier
+        )
+        BusinessRoute.Stock -> StockScreen(
+            onOpenItem = { id -> navigate(BusinessRoute.StockItem(id)) },
+            onOpenCatalog = { navigate(BusinessRoute.Catalog) },
+            onBack = back,
+            modifier = modifier
+        )
+        is BusinessRoute.StockItem -> StockItemScreen(
+            itemId = route.id,
+            onEditItem = { navigate(BusinessRoute.CatalogItemEdit(route.id)) },
+            onOpenOrder = { id -> navigate(BusinessRoute.OrderDetail(id)) },
             onBack = back,
             modifier = modifier
         )
@@ -165,21 +181,21 @@ private fun BusinessHome(
             }
         },
         floatingActionButton = {
-            if (companyState is CompanyState.Ready) {
+            val addResId = selectedTab.addResId
+            if (companyState is CompanyState.Ready && addResId != null) {
                 ExtendedFloatingActionButton(
                     onClick = {
-                        navigate(
-                            when (selectedTab) {
-                                BusinessTab.TICKETS -> BusinessRoute.TicketEdit(null)
-                                BusinessTab.CLIENTS -> BusinessRoute.ClientEdit(null)
-                                BusinessTab.AGENDA -> BusinessRoute.AppointmentEdit(null)
-                                BusinessTab.HOURS -> BusinessRoute.TimeEntryEdit(null)
-                                BusinessTab.ORDERS -> BusinessRoute.OrderEdit(null)
-                            }
-                        )
+                        when (selectedTab) {
+                            BusinessTab.DASHBOARD -> null
+                            BusinessTab.TICKETS -> BusinessRoute.TicketEdit(null)
+                            BusinessTab.CLIENTS -> BusinessRoute.ClientEdit(null)
+                            BusinessTab.AGENDA -> BusinessRoute.AppointmentEdit(null)
+                            BusinessTab.HOURS -> BusinessRoute.TimeEntryEdit(null)
+                            BusinessTab.ORDERS -> BusinessRoute.OrderEdit(null)
+                        }?.let(navigate)
                     },
                     icon = { Icon(Icons.Default.Add, contentDescription = null) },
-                    text = { Text(stringResource(id = selectedTab.addResId)) }
+                    text = { Text(stringResource(id = addResId)) }
                 )
             }
         },
@@ -207,6 +223,7 @@ private fun BusinessHome(
                     }
                     SyncStatusLine(syncInfo)
                     when (selectedTab) {
+                        BusinessTab.DASHBOARD -> DashboardTab(onOpenStock = { navigate(BusinessRoute.Stock) })
                         BusinessTab.TICKETS -> TicketsTab(onOpen = { navigate(BusinessRoute.TicketDetail(it)) })
                         BusinessTab.CLIENTS -> ClientsTab(onOpen = { navigate(BusinessRoute.ClientDetail(it)) })
                         BusinessTab.AGENDA -> AgendaTab(onOpen = { navigate(BusinessRoute.AppointmentEdit(it)) })

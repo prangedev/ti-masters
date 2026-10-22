@@ -18,6 +18,8 @@ import br.com.timasters.app.data.business.CompanyRepository
 import br.com.timasters.app.data.business.PricingSettingsDao
 import br.com.timasters.app.data.business.ServiceItemDao
 import br.com.timasters.app.data.business.ServiceOrderDao
+import br.com.timasters.app.data.business.StockMovementDao
+import br.com.timasters.app.data.business.OrderPhotoDao
 import br.com.timasters.app.data.business.OrderRepository
 import br.com.timasters.app.data.business.ReminderOption
 import br.com.timasters.app.data.business.ServiceOrderWithClient
@@ -87,7 +89,9 @@ class BusinessHomeViewModel @Inject constructor(
     serviceItemDao: ServiceItemDao,
     pricingSettingsDao: PricingSettingsDao,
     serviceOrderDao: ServiceOrderDao,
-    companyProfileDao: CompanyProfileDao
+    companyProfileDao: CompanyProfileDao,
+    orderPhotoDao: OrderPhotoDao,
+    stockMovementDao: StockMovementDao
 ) : ViewModel() {
 
     private val lookupFailed = MutableStateFlow(false)
@@ -113,7 +117,9 @@ class BusinessHomeViewModel @Inject constructor(
                     serviceItemDao.observeDirtyCount(id),
                     pricingSettingsDao.observeDirtyCount(id),
                     serviceOrderDao.observeDirtyCount(id),
-                    companyProfileDao.observeDirtyCount(id)
+                    companyProfileDao.observeDirtyCount(id),
+                    orderPhotoDao.observeDirtyCount(id),
+                    stockMovementDao.observeDirtyCount(id)
                 )
             ) { counts -> counts.sum() }
             combine(syncer.state, pending, companyRepository.lastSyncAt(id)) { state, count, last ->

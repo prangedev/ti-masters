@@ -30,6 +30,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Inventory2
+import androidx.compose.material.icons.filled.Warehouse
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -340,6 +341,7 @@ private fun ColorSwatch(hex: String?, selected: Boolean, label: String, onClick:
 @Composable
 fun CatalogScreen(
     onOpenItem: (String?) -> Unit,
+    onOpenStock: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: CatalogViewModel = hiltViewModel()
@@ -349,6 +351,11 @@ fun CatalogScreen(
     AppScreenScaffold(
         title = stringResource(id = R.string.catalog_title),
         navigationIcon = { BackIcon(onBack) },
+        actions = {
+            IconButton(onClick = onOpenStock) {
+                Icon(Icons.Default.Warehouse, contentDescription = stringResource(id = R.string.stock_title))
+            }
+        },
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = { onOpenItem(null) },
@@ -386,6 +393,7 @@ fun CatalogScreen(
                             Text(entry.name, style = MaterialTheme.typography.titleSmall, maxLines = 2, overflow = TextOverflow.Ellipsis)
                             Text(
                                 text = stringResource(id = ItemKind.from(entry.kind).labelResId) +
+                                    (if (entry.trackStock) " · " + stringResource(id = R.string.catalog_stock_controlled) else "") +
                                     if (entry.active) "" else " · " + stringResource(id = R.string.catalog_inactive),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -474,6 +482,49 @@ fun CatalogItemEditScreen(
                 onValueChange = { v -> viewModel.update { it.copy(description = v.take(1000)) } },
                 singleLine = false
             )
+            if (form.kind == ItemKind.PRODUCT) {
+                MoneyField(
+                    value = form.cost,
+                    label = stringResource(id = R.string.field_cost_optional),
+                    onValueChange = { v -> viewModel.update { it.copy(cost = v.take(12)) } },
+                    error = stringResource(id = R.string.error_money_invalid).takeIf { form.showErrors && form.costError }
+                )
+                Text(
+                    text = stringResource(id = R.string.field_cost_hint),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                CheckRow(
+                    checked = form.trackStock,
+                    label = stringResource(id = R.string.catalog_track_stock),
+                    onCheckedChange = { checked -> viewModel.update { it.copy(trackStock = checked) } }
+                )
+                if (form.trackStock) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        if (!form.isExisting) {
+                            MoneyField(
+                                value = form.initialQuantity,
+                                label = stringResource(id = R.string.stock_initial_quantity),
+                                onValueChange = { v -> viewModel.update { it.copy(initialQuantity = v.take(10)) } },
+                                error = stringResource(id = R.string.error_quantity_invalid).takeIf { form.showErrors && form.initialQuantityError },
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                        MoneyField(
+                            value = form.minStock,
+                            label = stringResource(id = R.string.stock_minimum_label),
+                            onValueChange = { v -> viewModel.update { it.copy(minStock = v.take(10)) } },
+                            error = stringResource(id = R.string.error_quantity_invalid).takeIf { form.showErrors && form.minStockError },
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                    Text(
+                        text = stringResource(id = R.string.catalog_track_stock_hint),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
             CheckRow(
                 checked = form.active,
                 label = stringResource(id = R.string.catalog_active),

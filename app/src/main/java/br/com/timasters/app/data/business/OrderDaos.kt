@@ -112,7 +112,21 @@ interface ServiceOrderDao {
     @Query("SELECT * FROM service_orders WHERE companyId = :companyId AND isDirty = 1")
     suspend fun dirty(companyId: String): List<ServiceOrderEntity>
 
-    @Query("SELECT id FROM service_orders WHERE id IN (:ids) AND (isDirty = 1 OR pdfPendingUpload = 1)")
+    @Query("SELECT * FROM service_orders WHERE companyId = :companyId AND signaturePendingUpload = 1 AND deletedAt IS NULL")
+    suspend fun pendingSignatureUploads(companyId: String): List<ServiceOrderEntity>
+
+    /** Downloaded documents that have a signature on the server (the PNG may be missing here). */
+    @Query("SELECT * FROM service_orders WHERE companyId = :companyId AND signaturePath IS NOT NULL AND signaturePendingUpload = 0 AND deletedAt IS NULL")
+    suspend fun signed(companyId: String): List<ServiceOrderEntity>
+
+    /** After the upload: records the new signature file, unless it was drawn again meanwhile. */
+    @Query(
+        """UPDATE service_orders SET signaturePath = :path, signaturePendingUpload = 0, isDirty = 1, updatedAt = :now
+           WHERE id = :id AND updatedAt = :updatedAt"""
+    )
+    suspend fun markSignatureUploaded(id: String, path: String?, updatedAt: Long, now: Long): Int
+
+    @Query("SELECT id FROM service_orders WHERE id IN (:ids) AND (isDirty = 1 OR pdfPendingUpload = 1 OR signaturePendingUpload = 1)")
     suspend fun dirtyIds(ids: List<String>): List<String>
 
     @Query("UPDATE service_orders SET isDirty = 0 WHERE id = :id AND updatedAt = :updatedAt")
@@ -125,7 +139,7 @@ interface ServiceOrderDao {
     )
     suspend fun markPdfUploaded(id: String, path: String, updatedAt: Long, now: Long): Int
 
-    @Query("SELECT COUNT(*) FROM service_orders WHERE companyId = :companyId AND (isDirty = 1 OR pdfPendingUpload = 1)")
+    @Query("SELECT COUNT(*) FROM service_orders WHERE companyId = :companyId AND (isDirty = 1 OR pdfPendingUpload = 1 OR signaturePendingUpload = 1)")
     fun observeDirtyCount(companyId: String): Flow<Int>
 }
 

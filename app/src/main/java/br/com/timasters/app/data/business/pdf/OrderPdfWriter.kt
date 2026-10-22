@@ -18,6 +18,7 @@ import br.com.timasters.app.core.validation.DocumentValidator
 import br.com.timasters.app.data.business.ClientEntity
 import br.com.timasters.app.data.business.CompanyProfileEntity
 import br.com.timasters.app.data.business.OrderKind
+import br.com.timasters.app.data.business.PhotoStage
 import br.com.timasters.app.data.business.PricingSettingsEntity
 import br.com.timasters.app.data.business.ServiceOrderEntity
 import java.io.File
@@ -31,12 +32,17 @@ data class OrderPdfData(
     val settings: PricingSettingsEntity?,
     val logo: Bitmap?,
     val ticketLabel: String?,
-    val zone: ZoneId
+    val zone: ZoneId,
+    /** Before/after photos, already shrunk for printing. */
+    val photos: List<Pair<PhotoStage, Bitmap>> = emptyList(),
+    /** The client's signature drawn on the phone, if any. */
+    val signature: Bitmap? = null
 )
 
 /**
  * Draws an A4 PDF with the company brand (logo and color), client, items, labor and totals.
- * Long item lists continue on new pages. Service orders end with signature lines.
+ * Long item lists continue on new pages. Photos come after the notes. Service orders (and
+ * signed quotes) end with signature lines, with the client's drawn signature when there is one.
  */
 class OrderPdfWriter(private val context: Context) {
 
@@ -63,7 +69,8 @@ class OrderPdfWriter(private val context: Context) {
             drawItems(page, data)
             drawTotals(page, data, brand)
             drawNotes(page, data)
-            if (data.order.orderKind == OrderKind.SERVICE_ORDER) drawSignatures(page)
+            drawPhotos(page, data)
+            if (data.order.orderKind == OrderKind.SERVICE_ORDER || data.signature != null) drawSignatures(page, data)
             page.finish()
             file.parentFile?.mkdirs()
             file.outputStream().use { document.writeTo(it) }
@@ -214,16 +221,61 @@ class OrderPdfWriter(private val context: Context) {
         }
     }
 
-    private fun drawSignatures(page: PageCursor) {
-        page.ensureSpace(80f)
-        page.y += 40f
+    /** Photos in a grid of three, grouped by stage ("Antes", "Depois"). */
+    private fun drawPhotos(page: PageCursor, data: OrderPdfData) {
+        if (data.photos.isEmpty()) return
+        val cellW = (CONTENT_W - 2 * PHOTO_GAP) / 3
+        val cellH = cellW * 0.75f
+        page.ensureSpace(cellH + 40f)
+        page.y += drawText(page.canvas, s(R.string.pdf_photos), MARGIN, page.y, CONTENT_W, paint(9f, bold = true, color = mutedColor)) + 6f
+        val border = Paint().apply { color = lineColor; style = Paint.Style.STROKE; strokeWidth = 0.8f }
+        data.photos.groupBy({ it.first }, { it.second }).forEach { (stage, bitmaps) ->
+            page.ensureSpace(cellH + 24f)
+            page.y += drawText(page.canvas, s(stage.labelResId), MARGIN, page.y, CONTENT_W, paint(10f, bold = true)) + 4f
+            bitmaps.chunked(3).forEach { row ->
+                page.ensureSpace(cellH + PHOTO_GAP)
+                row.forEachIndexed { index, bitmap ->
+                    val left = MARGIN + index * (cellW + PHOTO_GAP)
+                    val scale = minOf(cellW / bitmap.width, cellH / bitmap.height)
+                    val w = bitmap.width * scale
+                    val h = bitmap.height * scale
+                    val x = left + (cellW - w) / 2
+                    val y = page.y + (cellH - h) / 2
+                    page.canvas.drawBitmap(bitmap, null, RectF(x, y, x + w, y + h), Paint(Paint.FILTER_BITMAP_FLAG))
+                    page.canvas.drawRect(left, page.y, left + cellW, page.y + cellH, border)
+                }
+                page.y += cellH + PHOTO_GAP
+            }
+        }
+        page.y += 6f
+    }
+
+    private fun drawSignatures(page: PageCursor, data: OrderPdfData) {
+        val signature = data.signature
+        page.ensureSpace(if (signature != null) 130f else 80f)
         val half = (CONTENT_W - 40f) / 2
+        page.y += if (signature != null) 70f else 40f
+        signature?.let { bitmap ->
+            val scale = minOf(half / bitmap.width, 64f / bitmap.height)
+            val w = bitmap.width * scale
+            val h = bitmap.height * scale
+            val x = MARGIN + (half - w) / 2
+            page.canvas.drawBitmap(bitmap, null, RectF(x, page.y - h - 2f, x + w, page.y - 2f), Paint(Paint.FILTER_BITMAP_FLAG))
+        }
         val line = Paint().apply { color = mutedColor; strokeWidth = 0.8f }
         listOf(MARGIN to R.string.pdf_signature_client, MARGIN + half + 40f to R.string.pdf_signature_technician).forEach { (x, label) ->
             page.canvas.drawLine(x, page.y, x + half, page.y, line)
             drawText(page.canvas, s(label), x, page.y + 4f, half, paint(9f, color = mutedColor), Layout.Alignment.ALIGN_CENTER)
         }
-        page.y += 30f
+        val signedAt = data.order.signedAt
+        if (signature != null && signedAt != null) {
+            val who = data.order.signedBy ?: data.client.name
+            drawText(
+                page.canvas, s(R.string.pdf_signed_by, who, BrFormatters.formatDateTime(signedAt, data.zone)),
+                MARGIN, page.y + 16f, half, paint(8f, color = mutedColor), Layout.Alignment.ALIGN_CENTER
+            )
+        }
+        page.y += 34f
     }
 
     // endregion
@@ -304,5 +356,6 @@ class OrderPdfWriter(private val context: Context) {
         const val COL_UNIT_X = COL_TOTAL_X - COL_MONEY_W - 8f
         const val COL_QTY_X = COL_UNIT_X - COL_QTY_W - 8f
         const val COL_DESC_W = COL_QTY_X - MARGIN - 12f
+        const val PHOTO_GAP = 8f
     }
 }
