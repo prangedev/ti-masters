@@ -11,7 +11,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { createRemoteJWKSet, jwtVerify } from "npm:jose@5";
 
-const REPOSITORY = "__OWNER__/ti-masters";
+const REPOSITORY = "prangedev/ti-masters";
 const AUDIENCE = "ti-masters-release";
 const GITHUB_ISSUER = "https://token.actions.githubusercontent.com";
 const BUCKET = "app-releases";
