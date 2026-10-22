@@ -1,0 +1,1 @@
+- Novo: o app agora avisa quando sai uma versão nova e atualiza sozinho (Planos & Config > Versão do app).

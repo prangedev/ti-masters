@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Shared: PDFs of quotes/service orders, OpenWrt installation images and app updates (to the installer). -->
+<paths>
+    <files-path name="orders" path="orders/" />
+    <files-path name="firmware" path="firmware/" />
+    <cache-path name="updates" path="updates/" />
+</paths>

@@ -1,0 +1,427 @@
+{
+  "version": 2,
+  "guides": [
+    {
+      "id": "primeiro-acesso",
+      "title": "Primeiro acesso e segurança",
+      "summary": "Entrar na página do roteador e fechar as portas mais usadas por invasores.",
+      "sections": [
+        {
+          "title": "Entrar na página do roteador",
+          "steps": [
+            "Conecte o celular ou computador à rede do roteador (Wi-Fi ou cabo).",
+            "Na aba \"Meu roteador\", toque em \"Abrir página do roteador\" ou digite o endereço do modelo no navegador.",
+            "Use o usuário e a senha de fábrica do banco de modelos. Se não funcionar, procure a senha na etiqueta embaixo do aparelho.",
+            "Se nada funcionar, o último recurso é o reset: segure o botão Reset por 10 a 15 segundos com o aparelho ligado. Isso apaga toda a configuração."
+          ]
+        },
+        {
+          "title": "Proteger o aparelho",
+          "steps": [
+            "Troque a senha de administrador por uma senha forte (12 ou mais caracteres).",
+            "Desative o WPS e o gerenciamento remoto pela internet, se não forem usados.",
+            "Use WPA2-AES ou WPA3 no Wi-Fi. Nunca use WEP ou rede aberta.",
+            "Anote a nova senha no cadastro do cliente (campo Observações) ou em um cofre de senhas."
+          ],
+          "tip": "Senha de fábrica é a primeira coisa que um invasor tenta."
+        }
+      ]
+    },
+    {
+      "id": "roteador",
+      "title": "Configurar um roteador doméstico",
+      "summary": "Internet, Wi-Fi e canal certo em poucos passos.",
+      "sections": [
+        {
+          "title": "Internet (WAN)",
+          "steps": [
+            "Ligue o cabo do modem/ONT na porta WAN (normalmente azul ou marcada \"Internet\").",
+            "Escolha o tipo de conexão: DHCP / IP dinâmico (mais comum com ONT em modo roteador) ou PPPoE (usuário e senha fornecidos pela operadora).",
+            "Se a ONT da operadora também for roteador, prefira deixar a ONT em modo bridge e o PPPoE no seu roteador, para evitar NAT duplo."
+          ]
+        },
+        {
+          "title": "Wi-Fi",
+          "steps": [
+            "Dê nomes claros às redes (ex.: Cliente_2G e Cliente_5G) ou use o mesmo nome com \"Band Steering\" se o roteador suportar.",
+            "Segurança: WPA2-PSK (AES) ou WPA2/WPA3.",
+            "2,4 GHz: use os canais 1, 6 ou 11 e largura de 20 MHz. 5 GHz: largura de 80 MHz quando o ambiente permitir.",
+            "Use a aba Wi-Fi & Rede > Espectro deste app para escolher o canal menos ocupado."
+          ]
+        },
+        {
+          "title": "Rede interna (LAN)",
+          "steps": [
+            "Se houver outro equipamento na mesma faixa (ex.: ONT em 192.168.1.1), mude a LAN do roteador para outra faixa (ex.: 192.168.10.1).",
+            "Reserve IPs fixos (DHCP estático) para impressoras, câmeras e servidores."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "repetidor",
+      "title": "Repetidor, modo AP e mesh",
+      "summary": "Como levar o Wi-Fi mais longe sem derrubar a velocidade.",
+      "sections": [
+        {
+          "title": "Qual escolher",
+          "steps": [
+            "Modo AP (access point) com cabo: melhor opção. O segundo aparelho recebe a internet por cabo e só distribui o Wi-Fi.",
+            "Mesh: vários aparelhos da mesma marca formando uma rede só. Ótimo para casas grandes.",
+            "Repetidor sem fio: mais simples, mas cada salto sem fio perde cerca de metade da velocidade."
+          ]
+        },
+        {
+          "title": "Configurar como AP (cabo)",
+          "steps": [
+            "Antes de ligar o cabo, desative o servidor DHCP do segundo aparelho.",
+            "Dê a ele um IP fixo da mesma faixa do roteador principal, fora da faixa do DHCP (ex.: 192.168.0.2).",
+            "Ligue o cabo do roteador principal em uma porta LAN (não na WAN) do segundo aparelho.",
+            "Use o mesmo nome e senha de Wi-Fi para os aparelhos trocarem de ponto sozinhos, e canais diferentes em 2,4 GHz (1, 6 e 11)."
+          ]
+        },
+        {
+          "title": "Posicionar o repetidor",
+          "steps": [
+            "Coloque-o no meio do caminho, onde o sinal do roteador ainda é bom (melhor que -65 dBm).",
+            "Confira o sinal na aba Wi-Fi & Rede antes de fixar o aparelho."
+          ],
+          "tip": "Repetidor colocado onde o sinal já está fraco só repete um sinal ruim."
+        }
+      ]
+    },
+    {
+      "id": "mikrotik",
+      "title": "MikroTik: primeiros passos",
+      "summary": "Acesso, senha, serviços e atualização do RouterOS.",
+      "sections": [
+        {
+          "title": "Acessar",
+          "steps": [
+            "Pelo Winbox (computador) ou pela WebFig no navegador: 192.168.88.1.",
+            "Usuário admin. A senha é em branco nos aparelhos antigos ou a senha da etiqueta nos fabricados a partir de 2021.",
+            "Ative o Safe Mode antes de mexer: se a conexão cair, as mudanças são desfeitas sozinhas (botão Safe Mode no Winbox ou Ctrl+X no terminal)."
+          ]
+        },
+        {
+          "title": "Trocar a senha do admin",
+          "steps": [
+            "No terminal, troque a senha (use uma senha forte):"
+          ],
+          "commands": [
+            "/user set admin password=TroqueEstaSenha123"
+          ]
+        },
+        {
+          "title": "Desligar serviços que não usa",
+          "steps": [
+            "Telnet, FTP e a API sem criptografia raramente são necessários.",
+            "Restrinja o Winbox à rede interna (ajuste a faixa para a da sua LAN)."
+          ],
+          "commands": [
+            "/ip service disable telnet,ftp,api",
+            "/ip service set winbox address=192.168.88.0/24",
+            "/ip service set ssh address=192.168.88.0/24"
+          ]
+        },
+        {
+          "title": "Atualizar o RouterOS",
+          "steps": [
+            "Faça um backup antes (Files > Backup ou o comando abaixo).",
+            "Verifique e instale a atualização; o roteador reinicia sozinho.",
+            "Depois, atualize o RouterBOOT e reinicie mais uma vez."
+          ],
+          "commands": [
+            "/system backup save name=antes-da-atualizacao",
+            "/system package update check-for-updates",
+            "/system package update install",
+            "/system routerboard upgrade",
+            "/system reboot"
+          ],
+          "tip": "Na aba \"Meu roteador\", o app mostra se existe versão mais nova do RouterOS."
+        }
+      ]
+    },
+    {
+      "id": "firewall",
+      "title": "Firewall essencial",
+      "summary": "Bloquear o acesso ao roteador vindo da internet.",
+      "sections": [
+        {
+          "title": "Em roteadores domésticos",
+          "steps": [
+            "Mantenha o firewall/SPI ligado e o gerenciamento remoto desligado.",
+            "Desative o UPnP se não houver videogame ou câmera que dependa dele.",
+            "Abra portas (redirecionamento) só para o IP fixo do equipamento que precisa, nunca para a faixa inteira."
+          ]
+        },
+        {
+          "title": "No MikroTik (proteger o próprio roteador)",
+          "steps": [
+            "A configuração de fábrica do RouterOS já traz regras parecidas. Use estas só se o roteador foi zerado sem configuração padrão.",
+            "Elas exigem a lista de interfaces LAN (Interfaces > Interface List). Aplique com Safe Mode ligado.",
+            "A ordem importa: as regras são lidas de cima para baixo."
+          ],
+          "commands": [
+            "/ip firewall filter add chain=input action=accept connection-state=established,related,untracked comment=\"aceita conexoes ja abertas\"",
+            "/ip firewall filter add chain=input action=drop connection-state=invalid comment=\"descarta pacotes invalidos\"",
+            "/ip firewall filter add chain=input action=accept protocol=icmp comment=\"permite ping\"",
+            "/ip firewall filter add chain=input action=accept in-interface-list=LAN comment=\"acesso da rede interna\"",
+            "/ip firewall filter add chain=input action=drop comment=\"bloqueia o resto vindo da internet\""
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vpn",
+      "title": "VPN para acesso remoto",
+      "summary": "Acessar a rede do cliente de fora, com segurança.",
+      "sections": [
+        {
+          "title": "Antes de começar",
+          "steps": [
+            "A VPN precisa de um IP público no roteador. Muitas operadoras usam CGNAT (IP começando com 100.64 a 100.127 na WAN): nesse caso a VPN direta não funciona e é preciso pedir IP público à operadora ou usar um servidor intermediário.",
+            "Prefira WireGuard (rápido e simples). Evite PPTP, que não é mais seguro."
+          ]
+        },
+        {
+          "title": "WireGuard no MikroTik (RouterOS 7)",
+          "steps": [
+            "Crie a interface e uma faixa de IPs só para a VPN.",
+            "No celular, instale o app WireGuard, crie um túnel e copie a chave pública dele para o comando do peer.",
+            "Libere a porta UDP no firewall (a regra precisa ficar acima da regra que bloqueia o resto; se ainda não houver nenhuma regra, tire o place-before=0).",
+            "No app WireGuard, use como endpoint o IP público do cliente e a porta 13231, e a chave pública mostrada em /interface wireguard print."
+          ],
+          "commands": [
+            "/interface wireguard add name=wg-ti listen-port=13231",
+            "/ip address add address=10.10.10.1/24 interface=wg-ti",
+            "/interface wireguard peers add interface=wg-ti public-key=\"CHAVE_PUBLICA_DO_CELULAR\" allowed-address=10.10.10.2/32",
+            "/ip firewall filter add chain=input action=accept protocol=udp dst-port=13231 place-before=0 comment=\"WireGuard\"",
+            "/interface wireguard print"
+          ],
+          "tip": "Uma VPN gerenciada pelo próprio app (com servidor intermediário e convite por QR Code) está prevista para uma fase futura."
+        }
+      ]
+    },
+    {
+      "id": "firmware",
+      "title": "Atualizar firmware com segurança",
+      "summary": "Evitar o pior erro: um roteador que não liga mais.",
+      "sections": [
+        {
+          "title": "Passo a passo",
+          "steps": [
+            "Confira modelo e versão de hardware (V1, V2, Rev. A…) na etiqueta. O firmware precisa ser exatamente dessa versão.",
+            "Baixe só do site oficial do fabricante (links no banco de modelos).",
+            "Faça backup da configuração antes.",
+            "Atualize com o computador ligado por cabo, nunca pelo Wi-Fi.",
+            "Não desligue o aparelho durante a atualização (pode levar alguns minutos).",
+            "Equipamentos de operadora (ONTs Huawei, ZTE, Fiberhome, Nokia) são atualizados pela própria operadora."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gpon-epon",
+      "fiber": true,
+      "title": "GPON, EPON e XPON: o básico",
+      "summary": "Qual tecnologia é, como a ONT é liberada e o que cabe ao técnico.",
+      "sections": [
+        {
+          "title": "Diferenças",
+          "steps": [
+            "GPON (ITU-T G.984): 2,5 Gbps de descida e 1,25 Gbps de subida. É o padrão das grandes operadoras no Brasil.",
+            "EPON (IEEE 802.3ah): 1,25 Gbps nos dois sentidos. Comum em provedores regionais.",
+            "XPON: equipamento que funciona nos dois modos (GPON ou EPON). Escolha o modo igual ao da OLT do provedor.",
+            "ONU: só converte a fibra em cabo (bridge). ONT: ONU com roteador, Wi-Fi e às vezes telefone."
+          ]
+        },
+        {
+          "title": "Como a ONT é liberada",
+          "steps": [
+            "GPON: a OLT autoriza pelo número de série (SN, ex.: HWTC1234ABCD, ZTEG…, FHTT…) ou pela senha PLOAM/LOID.",
+            "EPON: a OLT autoriza pelo MAC ou pelo LOID.",
+            "Depois de autorizada, a OLT envia o perfil (VLAN, velocidade) e às vezes a configuração completa por TR-069/OMCI.",
+            "A liberação na OLT é feita pelo provedor. Ao trocar a ONT, informe ao provedor o SN/MAC do novo aparelho."
+          ],
+          "tip": "Nunca copie o SN ou MAC de outro cliente: além de derrubar o serviço dele, isso viola o contrato e a lei."
+        },
+        {
+          "title": "Luzes",
+          "steps": [
+            "PON aceso fixo: autenticada. PON piscando: sem autorização na OLT (SN/LOID não cadastrado ou modo GPON/EPON errado).",
+            "LOS vermelho ou piscando: sem sinal óptico. Veja o guia \"Sinal óptico\"."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fibra-sinal",
+      "fiber": true,
+      "title": "Sinal óptico: diagnóstico",
+      "summary": "Potência ideal, LOS e os defeitos mais comuns na fibra.",
+      "sections": [
+        {
+          "title": "Valores de referência (GPON classe B+)",
+          "steps": [
+            "Potência de recepção (RX) boa: entre -8 e -25 dBm.",
+            "Entre -25 e -27 dBm: funciona, mas perto do limite (quedas com calor ou chuva).",
+            "Abaixo de -27 dBm ou LOS: sinal insuficiente; procure o defeito.",
+            "A potência aparece na página da ONT (Status > Informações ópticas / PON) ou com power meter."
+          ]
+        },
+        {
+          "title": "Defeitos comuns",
+          "steps": [
+            "Conector sujo: limpe com caneta de limpeza ou álcool isopropílico e lenço sem fiapos.",
+            "Conector errado: APC (verde) só encaixa bem com APC; UPC (azul) com UPC. Misturar dá muita perda.",
+            "Curva fechada: a fibra não pode ser dobrada em raio menor que uns 3 cm (drop) ou presa com grampo apertado.",
+            "Drop rompido ou emenda ruim: meça na caixa (CTO) para saber se o problema é dentro ou fora do imóvel."
+          ],
+          "tip": "Nunca olhe direto para a ponta da fibra ou da ONT: o laser é invisível e pode ferir os olhos."
+        }
+      ]
+    },
+    {
+      "id": "ont-pppoe",
+      "fiber": true,
+      "title": "PPPoE na ONT (modo roteador)",
+      "summary": "A ONT disca a internet e distribui Wi-Fi e DHCP.",
+      "sections": [
+        {
+          "title": "Dados necessários",
+          "steps": [
+            "Usuário e senha PPPoE do cliente (do provedor).",
+            "VLAN de internet do provedor (ex.: 10, 100, 600) e, se houver, a prioridade (802.1p).",
+            "Acesso de administrador na ONT (veja o banco de modelos)."
+          ]
+        },
+        {
+          "title": "Configurar",
+          "steps": [
+            "Entre na página da ONT e abra WAN / Rede > Configuração da WAN.",
+            "Crie ou edite a conexão de internet: modo Route (roteador), tipo PPPoE.",
+            "Informe a VLAN, o usuário e a senha PPPoE. Ative NAT e marque como conexão de internet (serviço INTERNET).",
+            "Vincule as portas LAN e o Wi-Fi a essa WAN (\"Binding\" / \"Portas vinculadas\").",
+            "Salve e confira em Status se a WAN pegou IP. Teste a navegação."
+          ],
+          "tip": "Em ONTs de operadora a WAN costuma ser bloqueada para o usuário comum; só o administrador consegue alterar."
+        }
+      ]
+    },
+    {
+      "id": "ont-bridge",
+      "fiber": true,
+      "title": "ONT em bridge + roteador",
+      "summary": "Deixar a ONT só como conversor e discar o PPPoE no roteador ou MikroTik.",
+      "sections": [
+        {
+          "title": "Quando usar",
+          "steps": [
+            "Roteador melhor que o da ONT, MikroTik, mesh próprio ou necessidade de IP público no roteador.",
+            "Evita NAT duplo (problemas em jogos, câmeras e VPN)."
+          ]
+        },
+        {
+          "title": "Na ONT",
+          "steps": [
+            "Na WAN de internet, troque o modo de Route para Bridge, mantendo a mesma VLAN.",
+            "Vincule ao bridge a porta LAN onde o roteador será ligado (ex.: LAN1).",
+            "Desative o Wi-Fi da ONT se não for usar, para não disputar canal.",
+            "Em ONUs de 1 porta (ex.: ONU 110 B) não precisa mudar nada: elas já são bridge."
+          ]
+        },
+        {
+          "title": "No roteador",
+          "steps": [
+            "Ligue a porta WAN do roteador na LAN vinculada da ONT.",
+            "Configure a WAN como PPPoE com usuário e senha do cliente. VLAN fica na ONT (normalmente não repita no roteador).",
+            "No MikroTik: /interface pppoe-client add interface=ether1 user=USUARIO password=SENHA add-default-route=yes use-peer-dns=yes disabled=no"
+          ],
+          "commands": [
+            "/interface pppoe-client add interface=ether1 name=pppoe-out1 user=USUARIO password=SENHA add-default-route=yes use-peer-dns=yes disabled=no",
+            "/ip firewall nat add chain=srcnat out-interface=pppoe-out1 action=masquerade"
+          ],
+          "tip": "Se a ONT for da operadora, confirme com o provedor antes: alguns exigem ONT em modo roteador para o suporte remoto."
+        }
+      ]
+    },
+    {
+      "id": "restaurar-firmware",
+      "title": "Restaurar firmware (aparelho travado)",
+      "summary": "O que fazer quando a atualização falhou ou o aparelho não inicia.",
+      "sections": [
+        {
+          "title": "Antes de tudo",
+          "steps": [
+            "Tente primeiro o reset de fábrica (botão Reset por 10 a 15 s).",
+            "Se o aparelho só pisca ou não aparece na rede, use o modo de recuperação da marca: veja o card \"Recuperação\" no modelo.",
+            "Tenha um computador com cabo de rede: quase todos os modos de recuperação exigem cabo."
+          ]
+        },
+        {
+          "title": "Modos de recuperação mais comuns",
+          "steps": [
+            "TFTP (TP-Link, NETGEAR, Ubiquiti airMAX): o aparelho busca ou recebe o firmware por TFTP com o Reset pressionado.",
+            "Página de emergência (D-Link): abre uma página simples em 192.168.0.1 para enviar o firmware.",
+            "Ferramenta do fabricante: ASUS Firmware Restoration, MikroTik Netinstall, Xiaomi MiWiFi Repair Tool.",
+            "ONTs de operadora: a recuperação é feita pela operadora ou com troca do aparelho."
+          ],
+          "tip": "Use sempre o firmware da versão de hardware exata (etiqueta). Firmware errado pode inutilizar o aparelho de vez."
+        }
+      ]
+    },
+    {
+      "id": "dhcp",
+      "title": "DHCP e endereçamento",
+      "summary": "Faixa de IPs, reservas e como evitar conflitos.",
+      "sections": [
+        {
+          "title": "Configurar o servidor DHCP",
+          "steps": [
+            "Só um equipamento deve entregar DHCP em cada rede (normalmente o roteador principal).",
+            "Faixa sugerida: 192.168.X.100 a 192.168.X.200, deixando os IPs baixos para equipamentos fixos.",
+            "Tempo de concessão: 12 a 24 horas em casa; 1 a 4 horas em locais com muitos visitantes.",
+            "DNS: o do provedor ou públicos (1.1.1.1, 8.8.8.8)."
+          ]
+        },
+        {
+          "title": "Repetidores, APs e mesh",
+          "steps": [
+            "Em modo AP/repetidor, desative o DHCP do aparelho secundário.",
+            "Dois DHCPs na mesma rede causam IP errado, quedas e \"conectado sem internet\"."
+          ],
+          "commands": [
+            "/ip pool add name=dhcp_pool ranges=192.168.88.100-192.168.88.200",
+            "/ip dhcp-server network add address=192.168.88.0/24 gateway=192.168.88.1 dns-server=192.168.88.1",
+            "/ip dhcp-server add name=dhcp1 interface=bridge address-pool=dhcp_pool lease-time=12h disabled=no"
+          ],
+          "tip": "Os comandos acima são para MikroTik com a faixa padrão 192.168.88.0/24."
+        }
+      ]
+    },
+    {
+      "id": "mesh",
+      "title": "Rede mesh",
+      "summary": "Como montar e posicionar um sistema mesh sem perder velocidade.",
+      "sections": [
+        {
+          "title": "Montagem",
+          "steps": [
+            "Use aparelhos do mesmo sistema (Deco com Deco, Twibi com Twibi, EasyMesh com EasyMesh).",
+            "O nó principal liga no modem/ONT. Se a ONT for roteador, coloque o mesh em modo AP (ou a ONT em bridge).",
+            "Prefira ligar os nós por cabo (backhaul cabeado) sempre que possível: velocidade cheia em todos os pontos."
+          ]
+        },
+        {
+          "title": "Posicionamento",
+          "steps": [
+            "Sem cabo, deixe cada nó a no máximo 1 ou 2 cômodos do anterior, com sinal acima de -65 dBm.",
+            "Use a aba Wi-Fi & Rede deste app para medir o sinal no local antes de fixar o nó.",
+            "Evite atrás de TV, dentro de armário ou perto de micro-ondas."
+          ]
+        }
+      ]
+    }
+  ]
+}

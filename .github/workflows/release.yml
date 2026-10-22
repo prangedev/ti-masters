@@ -1,0 +1,93 @@
+# Publishes a new app version when a tag like "v1.2.0" is pushed:
+# runs the unit tests, builds the test APK, sends it to the app's update server
+# (Supabase, via the publish-release Edge Function) and attaches it to a GitHub release.
+# Phones with the app installed are then asked to update.
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write   # create the GitHub release
+  id-token: write   # OIDC token that proves to the Edge Function this is our tag build
+
+concurrency: release
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Read version
+        id: version
+        run: |
+          name=$(grep '^versionName=' version.properties | cut -d= -f2 | tr -d '\r ')
+          force=$(grep '^forceUpdate=' version.properties | cut -d= -f2 | tr -d '\r ')
+          if [ "v$name" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match versionName=$name in version.properties"
+            exit 1
+          fi
+          IFS=. read -r major minor patch <<< "$name"
+          code=$((major * 10000 + minor * 100 + patch))
+          min=0
+          if [ "$force" = "true" ]; then min=$code; fi
+          echo "name=$name" >> "$GITHUB_OUTPUT"
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          echo "min=$min" >> "$GITHUB_OUTPUT"
+
+      - name: Restore signing key
+        env:
+          DEBUG_KEYSTORE_B64: ${{ secrets.DEBUG_KEYSTORE_B64 }}
+        run: |
+          echo "$DEBUG_KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/debug.keystore"
+          echo "TIM_DEBUG_KEYSTORE=$RUNNER_TEMP/debug.keystore" >> "$GITHUB_ENV"
+
+      - name: Test and build
+        run: ./gradlew --no-daemon testDebugUnitTest assembleDebug
+
+      - name: Publish to the app
+        env:
+          FUNCTION_URL: https://snbmafhkirlxyrnyzxrt.supabase.co/functions/v1/publish-release
+          NAME: ${{ steps.version.outputs.name }}
+          CODE: ${{ steps.version.outputs.code }}
+          MIN: ${{ steps.version.outputs.min }}
+        run: |
+          set -euo pipefail
+          apk=app/build/outputs/apk/debug/app-debug.apk
+          sha=$(sha256sum "$apk" | cut -d' ' -f1)
+          size=$(stat -c%s "$apk")
+          token=$(curl -sSf -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=ti-masters-release" | jq -r .value)
+          call() {
+            curl -sS --fail-with-body -X POST "$FUNCTION_URL" \
+              -H "Authorization: Bearer $token" -H "Content-Type: application/json" -d "$1"
+          }
+          prepared=$(call "$(jq -nc --argjson c "$CODE" --arg n "$NAME" '{action:"prepare",version_code:$c,version_name:$n}')")
+          upload_url=$(echo "$prepared" | jq -r .signed_url)
+          curl -sS --fail-with-body -X PUT "$upload_url" \
+            -H "Content-Type: application/vnd.android.package-archive" -H "x-upsert: true" \
+            --data-binary "@$apk" > /dev/null
+          call "$(jq -nc --argjson c "$CODE" --arg n "$NAME" --arg s "$sha" --argjson z "$size" \
+            --argjson m "$MIN" --rawfile notes release/notes.md \
+            '{action:"commit",version_code:$c,version_name:$n,sha256:$s,size_bytes:$z,min_supported_code:$m,notes:$notes}')"
+          echo
+          echo "Published $NAME ($CODE) to the app, $size bytes, sha256 $sha"
+
+      - name: GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NAME: ${{ steps.version.outputs.name }}
+        run: |
+          cp app/build/outputs/apk/debug/app-debug.apk "TI-Masters-$NAME.apk"
+          gh release create "$GITHUB_REF_NAME" "TI-Masters-$NAME.apk" \
+            --title "TI Masters $NAME" --notes-file release/notes.md

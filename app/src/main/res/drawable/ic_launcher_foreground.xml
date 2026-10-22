@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- 1. SPEED GAUGE OUTER AMBIENT SHADOW / BACKDROP RING -->
+    <path
+        android:pathData="M 31.5,63.5 A 26.0,26.0 0 1,1 76.5,63.5"
+        android:strokeWidth="7"
+        android:strokeColor="#2B000000"
+        android:strokeLineCap="round" />
+
+    <!-- 2. SPEED GAUGE MAIN GRADIENT ARC (Teal -> Tech Blue -> Gold) -->
+    <path
+        android:pathData="M 33.2,63.0 A 24.0,24.0 0 1,1 74.8,63.0"
+        android:strokeWidth="4.8"
+        android:strokeLineCap="round">
+        <aapt:attr name="android:strokeColor">
+            <gradient
+                android:startX="32"
+                android:startY="63"
+                android:endX="76"
+                android:endY="27"
+                android:type="linear">
+                <item android:offset="0.0" android:color="#FF00F5D4" /> <!-- Electric Teal -->
+                <item android:offset="0.38" android:color="#FF0066FF" /> <!-- Tech Blue -->
+                <item android:offset="0.75" android:color="#FFFA00" />  <!-- Vibrant Yellow-Gold -->
+                <item android:offset="1.0" android:color="#FFD700" />  <!-- Rich Amber Gold -->
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- 3. SPEED GAUGE INNER GLOW ACCENT ARC -->
+    <path
+        android:pathData="M 36.5,61.5 A 20.0,20.0 0 1,1 71.5,61.5"
+        android:strokeWidth="1.2"
+        android:strokeColor="#4D00E5FF"
+        android:strokeLineCap="round" />
+
+    <!-- 4. RADIAL SPEED GAUGE TICK MARKS (Diagnostic Scale Lines) -->
+    <!-- Tick 1: 150 deg (Start / Teal) -->
+    <path
+        android:pathData="M 31.0,64.2 L 28.5,65.7"
+        android:strokeWidth="1.8"
+        android:strokeColor="#FF00F5D4"
+        android:strokeLineCap="round" />
+    <!-- Tick 2: 180 deg (Teal-Cyan) -->
+    <path
+        android:pathData="M 27.5,51.0 L 24.5,51.0"
+        android:strokeWidth="1.8"
+        android:strokeColor="#FF00E5FF"
+        android:strokeLineCap="round" />
+    <!-- Tick 3: 220 deg (Cyan-Blue) -->
+    <path
+        android:pathData="M 35.6,35.6 L 33.2,33.2"
+        android:strokeWidth="1.8"
+        android:strokeColor="#FF00A2FF"
+        android:strokeLineCap="round" />
+    <!-- Tick 4: 270 deg (Top Peak / Gold) -->
+    <path
+        android:pathData="M 54.0,24.5 L 54.0,21.5"
+        android:strokeWidth="2.2"
+        android:strokeColor="#FFD700"
+        android:strokeLineCap="round" />
+    <!-- Tick 5: 320 deg (Vibrant Gold) -->
+    <path
+        android:pathData="M 72.4,35.6 L 74.8,33.2"
+        android:strokeWidth="2.0"
+        android:strokeColor="#FFD700"
+        android:strokeLineCap="round" />
+    <!-- Tick 6: 0 deg (Amber Gold) -->
+    <path
+        android:pathData="M 80.5,51.0 L 83.5,51.0"
+        android:strokeWidth="1.8"
+        android:strokeColor="#FFC107"
+        android:strokeLineCap="round" />
+    <!-- Tick 7: 30 deg (Gold End Zone) -->
+    <path
+        android:pathData="M 77.0,64.2 L 79.5,65.7"
+        android:strokeWidth="1.8"
+        android:strokeColor="#FFC107"
+        android:strokeLineCap="round" />
+
+    <!-- 5. WI-FI & DIAGNOSTIC NETWORK SIGNAL WAVES -->
+    <!-- Wave 1 (Inner Teal Wave) -->
+    <path
+        android:pathData="M 46.5,50.0 A 8.5,8.5 0 0,1 61.5,50.0"
+        android:strokeWidth="1.8"
+        android:strokeColor="#D900E5FF"
+        android:strokeLineCap="round" />
+    <!-- Wave 2 (Middle Gold Wave) -->
+    <path
+        android:pathData="M 42.0,45.0 A 13.5,13.5 0 0,1 66.0,45.0"
+        android:strokeWidth="1.8"
+        android:strokeColor="#E6FFD700"
+        android:strokeLineCap="round" />
+    <!-- Wave 3 (Outer Cyan Wave) -->
+    <path
+        android:pathData="M 38.0,40.0 A 18.0,18.0 0 0,1 70.0,40.0"
+        android:strokeWidth="1.4"
+        android:strokeColor="#A600F5D4"
+        android:strokeLineCap="round" />
+
+    <!-- 6. SLEEK ROUTER ANTENNAS -->
+    <!-- Left Antenna Mast -->
+    <path
+        android:pathData="M 43.5,65.5 L 36.0,44.0"
+        android:strokeWidth="2.4"
+        android:strokeColor="#FF00E5FF"
+        android:strokeLineCap="round" />
+    <path
+        android:fillColor="#FFD700"
+        android:pathData="M 35.0,42.5 a 1.3,1.3 0 1,0 0,2.6 a 1.3,1.3 0 1,0 0,-2.6" />
+
+    <!-- Right Antenna Mast -->
+    <path
+        android:pathData="M 64.5,65.5 L 72.0,44.0"
+        android:strokeWidth="2.4"
+        android:strokeColor="#FF00E5FF"
+        android:strokeLineCap="round" />
+    <path
+        android:fillColor="#FFD700"
+        android:pathData="M 73.0,42.5 a 1.3,1.3 0 1,0 0,2.6 a 1.3,1.3 0 1,0 0,-2.6" />
+
+    <!-- Center Antenna Mast -->
+    <path
+        android:pathData="M 54.0,65.5 L 54.0,41.0"
+        android:strokeWidth="2.8"
+        android:strokeColor="#FF00F5D4"
+        android:strokeLineCap="round" />
+    <path
+        android:fillColor="#FFD700"
+        android:pathData="M 54.0,38.8 a 1.5,1.5 0 1,0 0,3.0 a 1.5,1.5 0 1,0 0,-3.0" />
+
+    <!-- 7. SPEEDOMETER NEEDLE & HUB -->
+    <!-- Needle Drop Shadow -->
+    <path
+        android:pathData="M 51.5,57.5 L 73.0,38.5 L 56.5,59.5 Z"
+        android:fillColor="#3A000000" />
+
+    <!-- Gold Speedometer Needle (Pointing to 320 deg / High Speed Zone) -->
+    <path
+        android:pathData="M 52.0,54.5 L 73.0,37.0 L 56.0,58.5 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="52"
+                android:startY="57"
+                android:endX="73"
+                android:endY="37"
+                android:type="linear">
+                <item android:offset="0.0" android:color="#FFF59E0B" /> <!-- Amber Gold -->
+                <item android:offset="0.65" android:color="#FFFFD700" /> <!-- Bright Gold -->
+                <item android:offset="1.0" android:color="#FFFFFFEE" /> <!-- White Tip -->
+            </gradient>
+        </aapt:attr>
+    </path>
+    <!-- Cyan Needle Axis Line -->
+    <path
+        android:pathData="M 54.0,56.5 L 72.2,37.8"
+        android:strokeWidth="0.8"
+        android:strokeColor="#FF00E5FF"
+        android:strokeLineCap="round" />
+
+    <!-- Center Gauge Pivot Hub -->
+    <path
+        android:pathData="M 49.2,56.5 a 4.8,4.8 0 1,0 9.6,0 a 4.8,4.8 0 1,0 -9.6,0">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="49"
+                android:startY="52"
+                android:endX="59"
+                android:endY="61"
+                android:type="linear">
+                <item android:offset="0.0" android:color="#FFFFE066" />
+                <item android:offset="0.5" android:color="#FFD700" />
+                <item android:offset="1.0" android:color="#FFB703" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <path
+        android:fillColor="#FF0A1128"
+        android:pathData="M 51.5,56.5 a 2.5,2.5 0 1,0 5.0,0 a 2.5,2.5 0 1,0 -5.0,0" />
+    <path
+        android:fillColor="#FF00E5FF"
+        android:pathData="M 53.0,56.5 a 1.0,1.0 0 1,0 2.0,0 a 1.0,1.0 0 1,0 -2.0,0" />
+
+    <!-- 8. SLEEK ROUTER CHASSIS (BODY) -->
+    <!-- Router Drop Shadow -->
+    <path
+        android:pathData="M 38,72 C 34.5,68.8 36.5,66.5 40,66.5 L 68,66.5 C 71.5,66.5 73.5,68.8 72,72 L 70.5,75 C 70,76.2 68,77 66,77 L 42,77 C 40,77 38,76.2 37.5,75 Z"
+        android:fillColor="#50000000" />
+
+    <!-- Router Main Chassis Base -->
+    <path
+        android:pathData="M 38,65.5 L 70,65.5 C 73.5,65.5 75.2,67.8 74.5,71.0 L 73.2,74.0 C 72.7,75.2 70.8,76.0 68.8,76.0 L 39.2,76.0 C 37.2,76.0 35.3,75.2 34.8,74.0 L 33.5,71.0 C 32.8,67.8 34.5,65.5 38,65.5 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="54"
+                android:startY="65.5"
+                android:endX="54"
+                android:endY="76.0"
+                android:type="linear">
+                <item android:offset="0.0" android:color="#FF1E293B" /> <!-- Dark Metallic Slate -->
+                <item android:offset="0.5" android:color="#FF0F172A" /> <!-- Navy Slate -->
+                <item android:offset="1.0" android:color="#FF060C1E" /> <!-- Deep Tech Blue -->
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Router Top Metallic Edge Highlight (Cyan) -->
+    <path
+        android:pathData="M 37.5,65.5 L 70.5,65.5"
+        android:strokeWidth="1.4"
+        android:strokeColor="#FF00E5FF"
+        android:strokeLineCap="round" />
+
+    <!-- Router Front Panel Metallic Trim Line -->
+    <path
+        android:pathData="M 35.5,70.8 L 72.5,70.8"
+        android:strokeWidth="0.8"
+        android:strokeColor="#2600E5FF" />
+
+    <!-- 9. ROUTER FRONT STATUS LEDS -->
+    <!-- Power LED (Gold) -->
+    <path
+        android:fillColor="#FFD700"
+        android:pathData="M 42.5,70.8 a 1.1,1.1 0 1,0 2.2,0 a 1.1,1.1 0 1,0 -2.2,0" />
+    <!-- WAN LED (Electric Teal) -->
+    <path
+        android:fillColor="#FF00F5D4"
+        android:pathData="M 47.5,70.8 a 1.1,1.1 0 1,0 2.2,0 a 1.1,1.1 0 1,0 -2.2,0" />
+
+    <!-- "TI" Tech Monogram Badge on Center Front Panel -->
+    <!-- T bar -->
+    <path
+        android:pathData="M 52.0,69.5 L 56.0,69.5"
+        android:strokeWidth="0.9"
+        android:strokeColor="#FF00E5FF"
+        android:strokeLineCap="round" />
+    <!-- T stem -->
+    <path
+        android:pathData="M 54.0,69.5 L 54.0,72.2"
+        android:strokeWidth="0.9"
+        android:strokeColor="#FF00E5FF"
+        android:strokeLineCap="round" />
+    <!-- I stem -->
+    <path
+        android:pathData="M 57.5,69.5 L 57.5,72.2"
+        android:strokeWidth="0.9"
+        android:strokeColor="#FFD700"
+        android:strokeLineCap="round" />
+
+    <!-- LAN LED (Cyan) -->
+    <path
+        android:fillColor="#FF00E5FF"
+        android:pathData="M 60.5,70.8 a 1.1,1.1 0 1,0 2.2,0 a 1.1,1.1 0 1,0 -2.2,0" />
+    <!-- Speed Diagnostic LED (Bright Gold) -->
+    <path
+        android:fillColor="#FFFFD700"
+        android:pathData="M 65.5,70.8 a 1.1,1.1 0 1,0 2.2,0 a 1.1,1.1 0 1,0 -2.2,0" />
+
+</vector>

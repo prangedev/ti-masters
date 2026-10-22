@@ -1,0 +1,1870 @@
+{
+  "version": 2,
+  "updated": "2026-10-20",
+  "brands": [
+    {
+      "id": "tplink",
+      "name": "TP-Link",
+      "keywords": [
+        "archer",
+        "tp-link",
+        "tplink",
+        "tplinkmodem",
+        "tplinkrepeater",
+        "tplinkwifi"
+      ],
+      "firmwareUrl": "https://www.tp-link.com/br/support/download/",
+      "firmwareModelUrl": "https://www.tp-link.com/br/support/download/{path}/",
+      "notes": "Para baixar o firmware certo, confira a versão de hardware (V1, V2…) na etiqueta. Firmware de outra versão pode inutilizar o aparelho.",
+      "models": [
+        {
+          "name": "TL-WR840N / TL-WR841N / TL-WR849N",
+          "type": "roteador",
+          "match": [
+            "wr840n",
+            "wr841n",
+            "wr849n"
+          ],
+          "address": "192.168.0.1 ou tplinkwifi.net (modelos antigos: 192.168.1.1)",
+          "logins": [
+            {
+              "role": "Administrador",
+              "user": "admin",
+              "password": "admin",
+              "source": "manual"
+            }
+          ],
+          "notes": "Versões de hardware recentes pedem para criar a senha no primeiro acesso.",
+          "firmwarePath": "tl-wr841n",
+          "guides": [
+            "primeiro-acesso",
+            "roteador",
+            "restaurar-firmware"
+          ]
+        },
+        {
+          "name": "Archer C20 / C50 / C6 / C80",
+          "type": "roteador",
+          "match": [
+            "archer c20",
+            "archer c50",
+            "archer c6",
+            "archer c80",
+            "c20",
+            "c50",
+            "c80"
+          ],
+          "address": "192.168.0.1 ou tplinkwifi.net",
+          "logins": [
+            {
+              "role": "Administrador (firmware antigo)",
+              "user": "admin",
+              "password": "admin",
+              "source": "manual"
+            },
+            {
+              "role": "Administrador (firmware novo)",
+              "user": "(não pede)",
+              "password": "criada no primeiro acesso",
+              "source": "manual"
+            }
+          ],
+          "notes": "Firmwares novos só pedem uma senha, criada na primeira vez que a página é aberta.",
+          "firmwarePath": "archer-c6",
+          "guides": [
+            "primeiro-acesso",
+            "roteador",
+            "restaurar-firmware"
+          ]
+        },
+        {
+          "name": "Archer AX10 / AX12 / AX23 / AX55 (Wi-Fi 6)",
+          "type": "roteador",
+          "match": [
+            "ax10",
+            "ax12",
+            "ax23",
+            "ax55",
+            "archer ax"
+          ],
+          "address": "192.168.0.1 ou tplinkwifi.net",
+          "logins": [
+            {
+              "role": "Administrador",
+              "user": "(não pede)",
+              "password": "criada no primeiro acesso",
+              "source": "manual"
+            }
+          ],
+          "notes": "Também pode ser configurado pelo app Tether.",
+          "firmwarePath": "archer-ax23",
+          "guides": [
+            "primeiro-acesso",
+            "roteador",
+            "restaurar-firmware"
+          ]
+        },
+        {
+          "name": "Repetidores RE200 / RE305 / TL-WA850RE",
+          "type": "repetidor",
+          "match": [
+            "re200",
+            "re305",
+            "wa850re",
+            "re450",
+            "re605x"
+          ],
+          "address": "tplinkrepeater.net ou 192.168.0.254",
+          "logins": [
+            {
+              "role": "Administrador (modelos antigos)",
+              "user": "admin",
+              "password": "admin",
+              "source": "manual"
+            },
+            {
+              "role": "Administrador (modelos novos)",
+              "user": "(não pede)",
+              "password": "criada no primeiro acesso",
+              "source": "manual"
+            }
+          ],
+          "notes": "Conecte-se à rede Wi-Fi do repetidor (TP-Link_Extender) para abrir a página. Botão WPS do roteador + botão RE também fazem a ligação.",
+          "firmwarePath": "re305",
+          "guides": [
+            "primeiro-acesso",
+            "roteador",
+            "restaurar-firmware"
+          ]
+        },
+        {
+          "name": "Deco (sistema mesh)",
+          "type": "mesh",
+          "match": [
+            "deco"
+          ],
+          "address": "Configuração pelo app Deco",
+          "logins": [
+            {
+              "role": "Administrador",
+              "user": "conta TP-Link ID",
+              "password": "da conta TP-Link ID",
+              "source": "manual"
+            }
+          ],
+          "notes": "O Deco não tem página web completa; tudo é feito pelo app Deco.",
+          "firmwarePath": "deco-m4"
+        },
+        {
+          "name": "XC220-G3v / XZ000-G3 (ONT XPON)",
+          "type": "ont",
+          "pon": "xpon",
+          "match": [
+            "xc220",
+            "xz000",
+            "tplinkmodem"
+          ],
+          "address": "tplinkmodem.net ou 192.168.1.1",
+          "logins": [
+            {
+              "role": "Administrador",
+              "user": "(não pede)",
+              "password": "criada no primeiro acesso",
+              "source": "relatado"
+            }
+          ],
+          "notes": "Confira a versão de hardware na etiqueta antes de atualizar.",
+          "firmwarePath": "xc220-g3v",
+          "guides": [
+            "gpon-epon",
+            "fibra-sinal",
+            "ont-pppoe",
+            "ont-bridge"
+          ]
+        }
+      ],
+      "firmware": [
+        {
+          "kind": "update",
+          "title": "Central de downloads TP-Link",
+          "notes": "Escolha o modelo e a versão de hardware (V1, V2…) da etiqueta.",
+          "url": "https://www.tp-link.com/br/support/download/"
+        }
+      ],
+      "recovery": [
+        {
+          "title": "Restaurar padrão de fábrica",
+          "steps": [
+            "Com o aparelho ligado, segure o botão Reset (use um clipe) por 10 a 15 segundos, até as luzes piscarem.",
+            "Espere de 2 a 3 minutos até ele reiniciar por completo.",
+            "Acesse com a senha de fábrica e configure de novo (internet, Wi-Fi e nova senha de acesso)."
+          ],
+          "tip": "O reset apaga toda a configuração. Anote antes usuário/senha PPPoE e o nome/senha do Wi-Fi."
+        },
+        {
+          "title": "Recuperar firmware por TFTP (aparelho que não liga direito)",
+          "steps": [
+            "Só para modelos com recuperação por TFTP: confira na página de suporte do modelo.",
+            "Ligue o computador por cabo na porta LAN e configure IP fixo 192.168.0.66, máscara 255.255.255.0.",
+            "Baixe o firmware da versão de hardware exata. Use um arquivo sem a palavra \"boot\" no nome.",
+            "Renomeie o arquivo para o nome que o modelo espera (geralmente tp_recovery.bin ou ModeloVx_tp_recovery.bin) e coloque na pasta do servidor TFTP (ex.: Tftpd64).",
+            "Com o roteador desligado, segure o Reset, ligue e solte depois de uns 10 segundos. O roteador busca o arquivo sozinho.",
+            "Aguarde reiniciar (2 a 5 minutos) e volte o computador para IP automático."
+          ],
+          "tip": "Precisa de computador com cabo: o celular não consegue fazer essa recuperação."
+        }
+      ]
+    },
+    {
+      "id": "mercusys",
+      "name": "Mercusys",
+      "keywords": [
+        "mercusys",
+        "mwlogin"
+      ],
+      "firmwareUrl": "https://www.mercusys.com/br/download",
+      "notes": "Marca da TP-Link. Interface parecida com a TP-Link.",
+      "models": [
+        {
+          "name": "MW301R / MW305R / MW325R / AC12",
+          "type": "roteador",
+          "match": [
+            "mw301r",
+            "mw305r",
+            "mw325r",
+            "ac12",
+            "ac10"
+          ],
+          "address": "mwlogin.net ou 192.168.1.1",
+          "logins": [
+            {
+              "role": "Administrador",
+              "user": "(não pede)",
+              "password": "criada no primeiro acesso",
+              "source": "manual"
+            }
+          ],
+          "notes": "Se esquecer a senha, só com reset (segurar o botão Reset por 10 s)."
+        }
+      ],
+      "firmware": [
+        {
+          "kind": "update",
+          "title": "Downloads Mercusys",
+          "notes": "",
+          "url": "https://www.mercusys.com/br/download"
+        }
+      ],
+      "recovery": [
+        {
+          "title": "Restaurar padrão de fábrica",
+          "steps": [
+            "Com o aparelho ligado, segure o botão Reset (use um clipe) por 10 a 15 segundos, até as luzes piscarem.",
+            "Espere de 2 a 3 minutos até ele reiniciar por completo.",
+            "Acesse com a senha de fábrica e configure de novo (internet, Wi-Fi e nova senha de acesso)."
+          ],
+          "tip": "O reset apaga toda a configuração. Anote antes usuário/senha PPPoE e o nome/senha do Wi-Fi."
+        }
+      ]
+    },
+    {
+      "id": "intelbras",
+      "name": "Intelbras",
+      "keywords": [
+        "1420 g",
+        "action rf",
+        "action rg",
+        "intelbras",
+        "iwr",
+        "ont 121",
+        "ont 142",
+        "onu 110",
+        "twibi",
+        "wifiber",
+        "wrn"
+      ],
+      "firmwareUrl": "https://www.intelbras.com/pt-br/",
+      "notes": "Na página da Intelbras, busque o modelo e abra a aba Downloads para o firmware.",
+      "models": [
+        {
+          "name": "Action RF 1200 / RG 1200 / W5-1200F",
+          "type": "roteador",
+          "match": [
+            "action rf",
+            "action rg",
+            "rf 1200",
+            "rg 1200",
+            "w5-1200f",
+            "w5 1200"
+          ],
+          "address": "10.0.0.1",
+          "logins": [
+            {
+              "role": "Administrador",
+              "user": "admin",
+              "password": "admin",
+              "source": "manual"
+            }
+          ],
+          "notes": "Modelos mais novos podem pedir para criar a senha no primeiro acesso.",
+          "guides": [
+            "primeiro-acesso",
+            "roteador"
+          ]
+        },
+        {
+          "name": "WRN 240 / WRN 342 / IWR 3000N",
+          "type": "roteador",
+          "match": [
+            "wrn 240",
+            "wrn240",
+            "wrn 342",
+            "wrn342",
+            "iwr 3000n",
+            "iwr3000n"
+          ],
+          "address": "10.0.0.1",
+          "logins": [
+            {
+              "role": "Administrador",
+              "user": "admin",
+              "password": "admin",
+              "source": "manual"
+            }
+          ],
+          "notes": "Linha antiga, sem atualizações frequentes.",
+          "guides": [
+            "primeiro-acesso",
+            "roteador"
+          ]
+        },
+        {
+          "name": "Twibi (mesh)",
+          "type": "mesh",
+          "match": [
+            "twibi"
+          ],
+          "address": "Configuração pelo app Wi-Fi Control",
+          "logins": [
+            {
+              "role": "Administrador",
+              "user": "(app)",
+              "password": "criada no app",
+              "source": "manual"
+            }
+          ],
+          "notes": "Atualização de firmware também pelo app.",
+          "guides": [
+            "primeiro-acesso",
+            "roteador"
+          ]
+        },
+        {
+          "name": "ONU 110 B (GPON/EPON, bridge)",
+          "type": "onu",
+          "pon": "xpon",
+          "match": [
+            "onu 110",
+            "110 b",
+            "110b"
+          ],
+          "address": "192.168.1.254",
+          "logins": [
+            {
+              "role": "Administrador",
+              "user": "admin",
+              "password": "intelbras",
+              "source": "manual"
+            }
+          ],
+          "notes": "Conversor de fibra para cabo (1 porta). Para acessar, coloque no computador o IP fixo 192.168.1.234, máscara 255.255.255.0. Reset: segurar 10 s (não apaga os dados GPON/OMCI).",
+          "guides": [
+            "gpon-epon",
+            "fibra-sinal",
+            "ont-bridge"
+          ],
+          "setup": [
+            {
+              "title": "Primeiro acesso",
+              "steps": [
+                "Ligue o computador por cabo na porta LAN da ONU.",
+                "Configure IP fixo 192.168.1.234, máscara 255.255.255.0.",
+                "Abra http://192.168.1.254 e entre com admin / intelbras.",
+                "Troque a senha padrão logo no primeiro acesso (o manual exige)."
+              ]
+            },
+            {
+              "title": "Uso típico",
+              "steps": [
+                "A ONU 110 B trabalha em bridge: o roteador atrás dela disca o PPPoE.",
+                "A VLAN e a liberação na OLT são feitas pelo provedor.",
+                "Em Status, confira se a ONU está autenticada (PON aceso fixo)."
+              ]
+            }
+          ]
+        },
+        {
+          "name": "ONT 121 W / 121 AC (GPON, Wi-Fi)",
+          "type": "ont",
+          "pon": "gpon",
+          "match": [
+            "121 w",
+            "121w",
+            "121 ac",
+            "121ac"
+          ],
+          "address": "192.168.1.1",
+          "logins": [
+            {
+              "role": "Administrador",
+              "user": "admin",
+              "password": "intelbras",
+              "source": "manual"
+            }
+          ],
+          "notes": "ONT com roteador Wi-Fi. O manual recomenda trocar a senha padrão no primeiro acesso.",
+          "guides": [
+            "gpon-epon",
+            "fibra-sinal",
+            "ont-pppoe",
+            "ont-bridge"
+          ]
+        },
+        {
+          "name": "ONT 142N W / 142N G / 1420 G (GPON)",
+          "type": "ont",
+          "pon": "gpon",
+          "match": [
+            "142n",
+            "142nw",
+            "1420 g",
+            "1420g"
+          ],
+          "address": "192.168.1.1",
+          "logins": [
+            {
+              "role": "Administrador",
+              "user": "admin",
+              "password": "intelbras",
+              "source": "relatado"
+            },
+            {
+              "role": "Administrador (unidades novas)",
+              "user": "admin",
+              "password": "senha da etiqueta",
+              "source": "etiqueta"
+            }
+          ],
+          "notes": "142N G e 1420 G têm portas de telefone (FXS). Manual oficial: \"ONT 142N G e ONT 1420 G\" na página do produto.",
+          "guides": [
+            "gpon-epon",
+            "fibra-sinal",
+            "ont-pppoe",
+            "ont-bridge"
+          ]
+        },
+        {
+          "name": "ONT HG6145F3 (GPON/EPON, Wi-Fi 6)",
+          "type": "ont",
+          "pon": "xpon",
+          "match": [
+            "hg6145f3"
+          ],
+          "address": "192.168.1.1",
+          "logins": [
+            {
+              "role": "Administrador",
+              "user": "admin",
+              "password": "senha individual da etiqueta",
+              "source": "manual"
+            }
+          ],
+          "notes": "Na primeira entrada obriga a criar senha de 8 a 29 caracteres (maiúscula, minúscula, número e caractere especial). Funciona em GPON (padrão) ou EPON. Tem EasyMesh (Multi-AP).",
+          "guides": [
+            "gpon-epon",
+            "fibra-sinal",
+            "ont-pppoe",
+            "ont-bridge",
+            "mesh"
+          ],
+          "setup": [
+            {
+              "title": "Atualizar firmware",
+              "steps": [
+                "Menu Gerenciamento > Gerenciamento de dispositivos > Atualização de Firmware.",
+                "Clique em Escolher arquivo, selecione o firmware e clique em Atualizar arquivo.",
+                "Quando terminar, clique em Reinicializar. Não desligue durante a atualização."
+              ]
+            },
+            {
+              "title": "Restaurar padrão",
+              "steps": [
+                "Gerenciamento > Gerenciamento de dispositivos > Preset/reset > Restaurar."
+              ]
+            },
+            {
+              "title": "Mesh (EasyMesh)",
+              "steps": [
+                "Rede > Configurações de WLAN > Multi-AP: habilite.",
+                "Status > Topologia mostra os pontos mesh conectados."
+              ]
+            }
+          ]
+        }
+      ],
+      "firmware": [
+        {
+          "kind": "update",
+          "title": "Site Intelbras (aba Downloads do produto)",
+          "notes": "Busque o modelo exato e abra a aba Downloads. A Intelbras publica firmware também das ONTs/ONUs.",
+          "url": "https://www.intelbras.com/pt-br/"
+        }
+      ],
+      "recovery": [
+        {
+          "title": "Restaurar padrão de fábrica",
+          "steps": [
+            "Com o aparelho ligado, segure o botão Reset (use um clipe) por 10 a 15 segundos, até as luzes piscarem.",
+            "Espere de 2 a 3 minutos até ele reiniciar por completo.",
+            "Acesse com a senha de fábrica e configure de novo (internet, Wi-Fi e nova senha de acesso)."
+          ],
+          "tip": "O reset apaga toda a configuração. Anote antes usuário/senha PPPoE e o nome/senha do Wi-Fi."
+        }
+      ]
+    },
+    {
+      "id": "dlink",
+      "name": "D-Link",
+      "keywords": [
+        "d-link",
+        "dlink",
+        "dir-"
+      ],
+      "firmwareUrl": "https://www.dlink.com/br/pt/support",
+      "notes": "Confira a revisão de hardware (Rev. A, B…) na etiqueta antes de baixar o firmware.",
+      "models": [
+        {
+          "name": "DIR-610 / DIR-615 / DIR-809 / DIR-842",
+          "type": "roteador",
+          "match": [
+            "dir-610",
+            "dir-615",
+            "dir-809",
+            "dir-842",
+            "dir610",
+            "dir615",
+            "dir842"
+          ],
+          "address": "192.168.0.1",
+          "logins": [
+            {
+              "role": "Administrador",
+              "user": "admin",
+              "password": "(em branco)",
+              "source": "manual"
+            }
+          ],
+          "notes": "Troque a senha em branco logo no primeiro acesso."
+        }
+      ],
+      "firmware": [
+        {
+          "kind": "update",
+          "title": "Suporte D-Link Brasil",
+          "notes": "",
+          "url": "https://www.dlink.com/br/pt/support"
+        }
+      ],
+      "recovery": [
+        {
+          "title": "Restaurar padrão de fábrica",
+          "steps": [
+            "Com o aparelho ligado, segure o botão Reset (use um clipe) por 10 a 15 segundos, até as luzes piscarem.",
+            "Espere de 2 a 3 minutos até ele reiniciar por completo.",
+            "Acesse com a senha de fábrica e configure de novo (internet, Wi-Fi e nova senha de acesso)."
+          ],
+          "tip": "O reset apaga toda a configuração. Anote antes usuário/senha PPPoE e o nome/senha do Wi-Fi."
+        },
+        {
+          "title": "Modo de recuperação (firmware corrompido)",
+          "steps": [
+            "Muitos modelos DIR têm página de emergência: desligue o roteador.",
+            "Ligue o computador por cabo e configure IP fixo 192.168.0.10, máscara 255.255.255.0.",
+            "Segure o Reset, ligue o roteador e mantenha por uns 10 segundos, até a luz de energia piscar.",
+            "Abra http://192.168.0.1: aparece a página de recuperação. Envie o firmware da revisão de hardware correta e aguarde."
+          ],
+          "tip": "Nem todo modelo tem essa página; confira o manual da revisão do seu aparelho."
+        }
+      ]
+    },
+    {
+      "id": "tenda",
+      "name": "Tenda",
+      "keywords": [
+        "tenda",
+        "tendawifi"
+      ],
+      "firmwareUrl": "https://www.tendacn.com/download",
+      "notes": "",
+      "models": [
+        {
+          "name": "N301 / F3 / AC6 / AC10",
+          "type": "roteador",
+          "match": [
+            "n301",
+            "f3",
+            "ac6",
+            "ac10",
+            "ac1200"
+          ],
+          "address": "192.168.0.1 ou tendawifi.com",
+          "logins": [
+            {
+              "role": "Administrador",
+              "user": "(não pede)",
+              "password": "(em branco); alguns antigos usam admin",
+              "source": "relatado"
+            }
+          ],
+          "notes": "O assistente de configuração pede para criar a senha de acesso."
+        }
+      ],
+      "firmware": [
+        {
+          "kind": "update",
+          "title": "Downloads Tenda",
+          "notes": "",
+          "url": "https://www.tendacn.com/download"
+        }
+      ],
+      "recovery": [
+        {
+          "title": "Restaurar padrão de fábrica",
+          "steps": [
+            "Com o aparelho ligado, segure o botão Reset (use um clipe) por 10 a 15 segundos, até as luzes piscarem.",
+            "Espere de 2 a 3 minutos até ele reiniciar por completo.",
+            "Acesse com a senha de fábrica e configure de novo (internet, Wi-Fi e nova senha de acesso)."
+          ],
+          "tip": "O reset apaga toda a configuração. Anote antes usuário/senha PPPoE e o nome/senha do Wi-Fi."
+        }
+      ]
+    },
+    {
+      "id": "asus",
+      "name": "ASUS",
+      "keywords": [
+        "asus",
+        "router.asus.com",
+        "rt-ac",
+        "rt-ax",
+        "rt-n"
+      ],
+      "firmwareUrl": "https://www.asus.com/br/support/download-center/",
+      "notes": "O próprio roteador avisa e instala atualizações em Administração > Atualização de firmware.",
+      "models": [
+        {
+          "name": "RT-AC / RT-AX / RT-N",
+          "type": "roteador",
+          "match": [
+            "rt-ac",
+            "rt-ax",
+            "rt-n"
+          ],
+          "address": "router.asus.com, 192.168.50.1 (novos) ou 192.168.1.1 (antigos)",
+          "logins": [
+            {
+              "role": "Administrador (antigos)",
+              "user": "admin",
+              "password": "admin",
+              "source": "manual"
+            },
+            {
+              "role": "Administrador (novos)",
+              "user": "criado no assistente",
+              "password": "criada no assistente",
+              "source": "manual"
+            }
+          ],
+          "notes": ""
+        }
+      ],
+      "firmware": [
+        {
+          "kind": "update",
+          "title": "Central de downloads ASUS",
+          "notes": "",
+          "url": "https://www.asus.com/br/support/download-center/"
+        },
+        {
+          "kind": "restore",
+          "title": "Firmware Restoration (modo resgate)",
+          "notes": "Baixe o utilitário Firmware Restoration na página do modelo (aba Driver e utilitários).",
+          "url": "https://www.asus.com/br/support/download-center/"
+        }
+      ],
+      "recovery": [
+        {
+          "title": "Restaurar padrão de fábrica",
+          "steps": [
+            "Com o aparelho ligado, segure o botão Reset (use um clipe) por 10 a 15 segundos, até as luzes piscarem.",
+            "Espere de 2 a 3 minutos até ele reiniciar por completo.",
+            "Acesse com a senha de fábrica e configure de novo (internet, Wi-Fi e nova senha de acesso)."
+          ],
+          "tip": "O reset apaga toda a configuração. Anote antes usuário/senha PPPoE e o nome/senha do Wi-Fi."
+        },
+        {
+          "title": "Modo resgate (firmware corrompido)",
+          "steps": [
+            "Ligue o computador por cabo e configure IP fixo 192.168.1.10, máscara 255.255.255.0.",
+            "Desligue o roteador, segure o Reset e ligue. Solte quando a luz de energia piscar devagar.",
+            "Abra o utilitário Firmware Restoration, escolha o firmware do modelo e clique em Upload.",
+            "Aguarde reiniciar e volte o computador para IP automático."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "netgear",
+      "name": "NETGEAR",
+      "keywords": [
+        "netgear",
+        "routerlogin"
+      ],
+      "firmwareUrl": "https://www.netgear.com/support/download/",
+      "notes": "",
+      "models": [
+        {
+          "name": "Linha Nighthawk / R / RAX",
+          "type": "roteador",
+          "match": [
+            "nighthawk",
+            "r6",
+            "r7",
+            "rax"
+          ],
+          "address": "routerlogin.net ou 192.168.1.1",
+          "logins": [
+            {
+              "role": "Administrador",
+              "user": "admin",
+              "password": "password",
+              "source": "manual"
+            }
+          ],
+          "notes": "Os mais novos pedem para trocar a senha no primeiro acesso."
+        }
+      ],
+      "firmware": [
+        {
+          "kind": "update",
+          "title": "Downloads NETGEAR",
+          "notes": "",
+          "url": "https://www.netgear.com/support/download/"
+        }
+      ],
+      "recovery": [
+        {
+          "title": "Restaurar padrão de fábrica",
+          "steps": [
+            "Com o aparelho ligado, segure o botão Reset (use um clipe) por 10 a 15 segundos, até as luzes piscarem.",
+            "Espere de 2 a 3 minutos até ele reiniciar por completo.",
+            "Acesse com a senha de fábrica e configure de novo (internet, Wi-Fi e nova senha de acesso)."
+          ],
+          "tip": "O reset apaga toda a configuração. Anote antes usuário/senha PPPoE e o nome/senha do Wi-Fi."
+        },
+        {
+          "title": "Recuperação por TFTP",
+          "steps": [
+            "Configure no computador (cabo) IP fixo 192.168.1.10, máscara 255.255.255.0.",
+            "Ligue o roteador segurando o Reset até a luz de energia piscar.",
+            "Envie o firmware por TFTP em modo binário para 192.168.1.1 (ex.: tftp -i 192.168.1.1 put firmware.img)."
+          ],
+          "tip": "Disponível em boa parte da linha R/RAX; confira a página do modelo."
+        }
+      ]
+    },
+    {
+      "id": "linksys",
+      "name": "Linksys",
+      "keywords": [
+        "linksys",
+        "myrouter.local"
+      ],
+      "firmwareUrl": "https://support.linksys.com/",
+      "notes": "",
+      "models": [
+        {
+          "name": "Linha E / EA",
+          "type": "roteador",
+          "match": [
+            "e900",
+            "e1200",
+            "ea6",
+            "ea7",
+            "ea8"
+          ],
+          "address": "192.168.1.1 ou myrouter.local",
+          "logins": [
+            {
+              "role": "Administrador",
+              "user": "admin (ou em branco)",
+              "password": "admin",
+              "source": "manual"
+            }
+          ],
+          "notes": "Linha Velop é configurada pelo app Linksys."
+        }
+      ],
+      "firmware": [
+        {
+          "kind": "update",
+          "title": "Suporte Linksys",
+          "notes": "",
+          "url": "https://support.linksys.com/"
+        }
+      ],
+      "recovery": [
+        {
+          "title": "Restaurar padrão de fábrica",
+          "steps": [
+            "Com o aparelho ligado, segure o botão Reset (use um clipe) por 10 a 15 segundos, até as luzes piscarem.",
+            "Espere de 2 a 3 minutos até ele reiniciar por completo.",
+            "Acesse com a senha de fábrica e configure de novo (internet, Wi-Fi e nova senha de acesso)."
+          ],
+          "tip": "O reset apaga toda a configuração. Anote antes usuário/senha PPPoE e o nome/senha do Wi-Fi."
+        }
+      ]
+    },
+    {
+      "id": "huawei",
+      "name": "Huawei",
+      "keywords": [
+        "ax3",
+        "echolife",
+        "eg8145",
+        "hg8145",
+        "hg8245",
+        "hg8310",
+        "hg8546",
+        "huawei",
+        "ws7100"
+      ],
+      "firmwareUrl": "",
+      "notes": "ONTs geralmente de operadora: firmware atualizado pela operadora. Muitas operadoras trocam as senhas de fábrica; algumas usam HTTPS com certificado próprio (o navegador mostra aviso).",
+      "models": [
+        {
+          "name": "HG8245H / HG8245H5 / HG8245Q2 / HG8546M",
+          "type": "ont",
+          "pon": "gpon",
+          "match": [
+            "hg8245",
+            "hg8546",
+            "echolife"
+          ],
+          "address": "192.168.100.1 (algumas: 192.168.18.1)",
+          "logins": [
+            {
+              "role": "Usuário (limitado, não altera a WAN)",
+              "user": "root",
+              "password": "admin",
+              "source": "relatado"
+            },
+            {
+              "role": "Superadministrador (firmware genérico)",
+              "user": "telecomadmin",
+              "password": "admintelecom",
+              "source": "relatado"
+            },
+            {
+              "role": "Usuário alternativo",
+              "user": "Epuser",
+              "password": "userEp",
+              "source": "relatado"
+            }
+          ],
+          "notes": "Para acessar por cabo, coloque o computador na mesma faixa, ex.: IP 192.168.100.100.",
+          "guides": [
+            "gpon-epon",
+            "fibra-sinal",
+            "ont-pppoe",
+            "ont-bridge"
+          ]
+        },
+        {
+          "name": "HG8145V5 / EG8145V5 (Wi-Fi 5)",
+          "type": "ont",
+          "pon": "gpon",
+          "match": [
+            "hg8145",
+            "eg8145"
+          ],
+          "address": "192.168.100.1",
+          "logins": [
+            {
+              "role": "Usuário",
+              "user": "root",
+              "password": "admin",
+              "source": "relatado"
+            },
+            {
+              "role": "Superadministrador",
+              "user": "telecomadmin",
+              "password": "admintelecom (ou senha da operadora)",
+              "source": "relatado"
+            }
+          ],
+          "notes": "Em vários provedores a senha do superadministrador é exclusiva da operadora.",
+          "guides": [
+            "gpon-epon",
+            "fibra-sinal",
+            "ont-pppoe",
+            "ont-bridge"
+          ]
+        },
+        {
+          "name": "HG8310M / HG8010H (ONU bridge, 1 porta)",
+          "type": "onu",
+          "pon": "gpon",
+          "match": [
+            "hg8310",
+            "hg8010"
+          ],
+          "address": "192.168.100.1",
+          "logins": [
+            {
+              "role": "Usuário",
+              "user": "root",
+              "password": "admin",
+              "source": "relatado"
+            }
+          ],
+          "notes": "Só converte a fibra em cabo; o PPPoE é discado no roteador.",
+          "guides": [
+            "gpon-epon",
+            "fibra-sinal",
+            "ont-bridge"
+          ]
+        },
+        {
+          "name": "WiFi AX2 / AX3 (WS7100) — roteador",
+          "type": "roteador",
+          "match": [
+            "ws7100",
+            "ws7200",
+            "ax3",
+            "ax2"
+          ],
+          "address": "192.168.3.1",
+          "logins": [
+            {
+              "role": "Administrador",
+              "user": "(não pede)",
+              "password": "criada no primeiro acesso",
+              "source": "manual"
+            }
+          ],
+          "notes": "Também configurável pelo app Huawei AI Life.",
+          "guides": [
+            "primeiro-acesso",
+            "roteador",
+            "mesh"
+          ]
+        }
+      ],
+      "firmware": [
+        {
+          "kind": "update",
+          "title": "Firmware fornecido pela operadora",
+          "notes": "Não há download público. A operadora atualiza remotamente (TR-069) ou fornece o arquivo ao técnico credenciado."
+        }
+      ],
+      "recovery": [
+        {
+          "title": "Restaurar padrão de fábrica",
+          "steps": [
+            "Com o aparelho ligado, segure o botão Reset (use um clipe) por 10 a 15 segundos, até as luzes piscarem.",
+            "Espere de 2 a 3 minutos até ele reiniciar por completo.",
+            "Acesse com a senha de fábrica e configure de novo (internet, Wi-Fi e nova senha de acesso)."
+          ],
+          "tip": "O reset apaga toda a configuração. Anote antes usuário/senha PPPoE e o nome/senha do Wi-Fi."
+        }
+      ]
+    },
+    {
+      "id": "zte",
+      "name": "ZTE",
+      "keywords": [
+        "f601",
+        "f660",
+        "f6600",
+        "f6645",
+        "f670",
+        "f680",
+        "zte",
+        "zxhn"
+      ],
+      "firmwareUrl": "",
+      "notes": "Equipamento de operadora: o firmware é atualizado pela operadora. As senhas variam por operadora.",
+      "models": [
+        {
+          "name": "ZXHN F660 / F670L / F680 / F6600P",
+          "type": "ont",
+          "pon": "gpon",
+          "match": [
+            "f660",
+            "f670",
+            "f680",
+            "f6600",
+            "zxhn"
+          ],
+          "address": "192.168.1.1",
+          "logins": [
+            {
+              "role": "Administrador",
+              "user": "admin",
+              "password": "senha da etiqueta",
+              "source": "etiqueta"
+            },
+            {
+              "role": "Administrador (firmware genérico)",
+              "user": "admin",
+              "password": "admin",
+              "source": "relatado"
+            },
+            {
+              "role": "Usuário (limitado)",
+              "user": "user",
+              "password": "user",
+              "source": "relatado"
+            }
+          ],
+          "notes": "Não há senha universal: depende do firmware da operadora. Reset pode apagar a configuração da operadora; só resete se for reconfigurar.",
+          "guides": [
+            "gpon-epon",
+            "fibra-sinal",
+            "ont-pppoe",
+            "ont-bridge"
+          ]
+        },
+        {
+          "name": "ZXHN F601 (ONU bridge)",
+          "type": "onu",
+          "pon": "gpon",
+          "match": [
+            "f601"
+          ],
+          "address": "192.168.1.1",
+          "logins": [
+            {
+              "role": "Administrador",
+              "user": "admin",
+              "password": "admin",
+              "source": "relatado"
+            }
+          ],
+          "notes": "ONU de 1 porta em bridge.",
+          "guides": [
+            "gpon-epon",
+            "fibra-sinal",
+            "ont-bridge"
+          ]
+        }
+      ],
+      "firmware": [
+        {
+          "kind": "update",
+          "title": "Firmware fornecido pela operadora",
+          "notes": "Não há download público. A operadora atualiza remotamente (TR-069) ou fornece o arquivo ao técnico credenciado."
+        }
+      ],
+      "recovery": [
+        {
+          "title": "Restaurar padrão de fábrica",
+          "steps": [
+            "Com o aparelho ligado, segure o botão Reset (use um clipe) por 10 a 15 segundos, até as luzes piscarem.",
+            "Espere de 2 a 3 minutos até ele reiniciar por completo.",
+            "Acesse com a senha de fábrica e configure de novo (internet, Wi-Fi e nova senha de acesso)."
+          ],
+          "tip": "O reset apaga toda a configuração. Anote antes usuário/senha PPPoE e o nome/senha do Wi-Fi."
+        }
+      ]
+    },
+    {
+      "id": "fiberhome",
+      "name": "Fiberhome",
+      "keywords": [
+        "an5506",
+        "an5506-01",
+        "fiberhome",
+        "hg6143",
+        "hg6145",
+        "hg6145f"
+      ],
+      "firmwareUrl": "",
+      "notes": "Equipamento de operadora: o firmware é atualizado pela operadora.",
+      "models": [
+        {
+          "name": "AN5506-04-F / AN5506-04-FA / HG6145D / HG6145F / HG6143D",
+          "type": "ont",
+          "pon": "gpon",
+          "match": [
+            "an5506-04",
+            "hg6145",
+            "hg6143"
+          ],
+          "address": "192.168.1.1",
+          "logins": [
+            {
+              "role": "Administrador",
+              "user": "admin",
+              "password": "senha da etiqueta",
+              "source": "etiqueta"
+            },
+            {
+              "role": "Usuário (limitado)",
+              "user": "user",
+              "password": "user1234",
+              "source": "relatado"
+            },
+            {
+              "role": "Administrador (modelos antigos)",
+              "user": "admin",
+              "password": "admin",
+              "source": "relatado"
+            }
+          ],
+          "notes": "No HG6145F1 com firmware antigo a senha de Wi-Fi de fábrica pode ser deduzida pelo nome da rede (CVE-2025-63353): sempre troque a senha do Wi-Fi.",
+          "guides": [
+            "gpon-epon",
+            "fibra-sinal",
+            "ont-pppoe",
+            "ont-bridge"
+          ]
+        },
+        {
+          "name": "AN5506-01-A (ONU bridge)",
+          "type": "onu",
+          "pon": "gpon",
+          "match": [
+            "an5506-01"
+          ],
+          "address": "192.168.1.1",
+          "logins": [
+            {
+              "role": "Administrador",
+              "user": "admin",
+              "password": "admin (ou senha da etiqueta)",
+              "source": "relatado"
+            }
+          ],
+          "notes": "",
+          "guides": [
+            "gpon-epon",
+            "fibra-sinal",
+            "ont-bridge"
+          ]
+        }
+      ],
+      "firmware": [
+        {
+          "kind": "update",
+          "title": "Firmware fornecido pela operadora",
+          "notes": "Não há download público. A operadora atualiza remotamente (TR-069) ou fornece o arquivo ao técnico credenciado."
+        }
+      ],
+      "recovery": [
+        {
+          "title": "Restaurar padrão de fábrica",
+          "steps": [
+            "Com o aparelho ligado, segure o botão Reset (use um clipe) por 10 a 15 segundos, até as luzes piscarem.",
+            "Espere de 2 a 3 minutos até ele reiniciar por completo.",
+            "Acesse com a senha de fábrica e configure de novo (internet, Wi-Fi e nova senha de acesso)."
+          ],
+          "tip": "O reset apaga toda a configuração. Anote antes usuário/senha PPPoE e o nome/senha do Wi-Fi."
+        }
+      ]
+    },
+    {
+      "id": "nokia",
+      "name": "Nokia",
+      "keywords": [
+        "nokia",
+        "alcatel",
+        "g-140w",
+        "g-1425",
+        "g-240w"
+      ],
+      "firmwareUrl": "",
+      "notes": "Equipamento de operadora: o firmware é atualizado pela operadora.",
+      "models": [
+        {
+          "name": "G-140W-C / G-240W / G-1425G-A",
+          "type": "ont",
+          "match": [
+            "g-140w",
+            "g-240w",
+            "g-1425"
+          ],
+          "address": "https://192.168.1.254 (precisa do https)",
+          "logins": [
+            {
+              "role": "Administrador",
+              "user": "AdminGPON",
+              "password": "ALC#FGU",
+              "source": "relatado"
+            },
+            {
+              "role": "Usuário",
+              "user": "userAdmin",
+              "password": "senha da etiqueta",
+              "source": "etiqueta"
+            }
+          ],
+          "notes": "Várias operadoras desativam ou trocam a conta AdminGPON.",
+          "pon": "gpon",
+          "guides": [
+            "gpon-epon",
+            "fibra-sinal",
+            "ont-pppoe",
+            "ont-bridge"
+          ]
+        }
+      ],
+      "firmware": [
+        {
+          "kind": "update",
+          "title": "Firmware fornecido pela operadora",
+          "notes": "Não há download público. A operadora atualiza remotamente (TR-069) ou fornece o arquivo ao técnico credenciado."
+        }
+      ],
+      "recovery": [
+        {
+          "title": "Restaurar padrão de fábrica",
+          "steps": [
+            "Com o aparelho ligado, segure o botão Reset (use um clipe) por 10 a 15 segundos, até as luzes piscarem.",
+            "Espere de 2 a 3 minutos até ele reiniciar por completo.",
+            "Acesse com a senha de fábrica e configure de novo (internet, Wi-Fi e nova senha de acesso)."
+          ],
+          "tip": "O reset apaga toda a configuração. Anote antes usuário/senha PPPoE e o nome/senha do Wi-Fi."
+        }
+      ]
+    },
+    {
+      "id": "vivo",
+      "name": "Vivo (roteadores da operadora)",
+      "keywords": [
+        "vivo",
+        "askey",
+        "mitrastar",
+        "rtf3505",
+        "rtf8115"
+      ],
+      "firmwareUrl": "",
+      "notes": "Fornecidos pela Vivo; o firmware é atualizado pela operadora.",
+      "models": [
+        {
+          "name": "Askey RTF3505VW (VDSL)",
+          "type": "roteador",
+          "match": [
+            "rtf3505"
+          ],
+          "address": "192.168.15.1",
+          "logins": [
+            {
+              "role": "Administrador",
+              "user": "admin",
+              "password": "senha da etiqueta",
+              "source": "etiqueta"
+            }
+          ],
+          "notes": "Modem de cobre (VDSL), não é de fibra.",
+          "guides": [
+            "primeiro-acesso"
+          ]
+        },
+        {
+          "name": "Askey RTF8115VW / Mitrastar GPT-2541GNAC (fibra)",
+          "type": "ont",
+          "pon": "gpon",
+          "match": [
+            "rtf8115",
+            "gpt-2541",
+            "mitrastar"
+          ],
+          "address": "192.168.15.1",
+          "logins": [
+            {
+              "role": "Administrador",
+              "user": "admin",
+              "password": "senha da etiqueta",
+              "source": "etiqueta"
+            }
+          ],
+          "notes": "ONT da Vivo Fibra. O firmware é atualizado pela operadora.",
+          "guides": [
+            "gpon-epon",
+            "fibra-sinal",
+            "ont-pppoe",
+            "ont-bridge"
+          ]
+        }
+      ],
+      "firmware": [
+        {
+          "kind": "update",
+          "title": "Firmware fornecido pela operadora",
+          "notes": "Não há download público. A operadora atualiza remotamente (TR-069) ou fornece o arquivo ao técnico credenciado."
+        }
+      ],
+      "recovery": [
+        {
+          "title": "Restaurar padrão de fábrica",
+          "steps": [
+            "Com o aparelho ligado, segure o botão Reset (use um clipe) por 10 a 15 segundos, até as luzes piscarem.",
+            "Espere de 2 a 3 minutos até ele reiniciar por completo.",
+            "Acesse com a senha de fábrica e configure de novo (internet, Wi-Fi e nova senha de acesso)."
+          ],
+          "tip": "O reset apaga toda a configuração. Anote antes usuário/senha PPPoE e o nome/senha do Wi-Fi."
+        }
+      ]
+    },
+    {
+      "id": "mikrotik",
+      "name": "MikroTik",
+      "keywords": [
+        "mikrotik",
+        "routeros",
+        "routerboard",
+        "webfig"
+      ],
+      "firmwareUrl": "https://mikrotik.com/download",
+      "notes": "O app compara a versão do RouterOS instalada com a mais recente publicada pela MikroTik. Atualize por System > Packages > Check For Updates (Winbox ou WebFig).",
+      "models": [
+        {
+          "name": "hEX / hAP / RB / CCR / CRS",
+          "type": "mikrotik",
+          "match": [
+            "hex",
+            "hap",
+            "rb7",
+            "rb9",
+            "rb4",
+            "rb5",
+            "ccr",
+            "crs",
+            "chr",
+            "l009"
+          ],
+          "address": "192.168.88.1 (Winbox na porta 8291)",
+          "logins": [
+            {
+              "role": "Administrador (RouterOS antigo)",
+              "user": "admin",
+              "password": "(em branco)",
+              "source": "manual"
+            },
+            {
+              "role": "Administrador (aparelhos novos)",
+              "user": "admin",
+              "password": "senha única da etiqueta",
+              "source": "etiqueta"
+            }
+          ],
+          "notes": "Aparelhos fabricados a partir de 2021 vêm com senha única impressa na etiqueta. Depois de atualizar o RouterOS, atualize também o RouterBOOT (System > RouterBOARD > Upgrade).",
+          "guides": [
+            "mikrotik",
+            "firewall",
+            "vpn",
+            "restaurar-firmware"
+          ]
+        }
+      ],
+      "firmware": [
+        {
+          "kind": "update",
+          "title": "Downloads MikroTik (RouterOS)",
+          "notes": "",
+          "url": "https://mikrotik.com/download"
+        },
+        {
+          "kind": "restore",
+          "title": "Netinstall (reinstalar o RouterOS)",
+          "notes": "Apaga e reinstala o RouterOS pelo computador. Use quando o aparelho não inicia ou perdeu a senha.",
+          "url": "https://help.mikrotik.com/docs/display/ROS/Netinstall"
+        }
+      ],
+      "recovery": [
+        {
+          "title": "Reset da configuração",
+          "steps": [
+            "Pelo terminal: /system reset-configuration (com o aparelho acessível).",
+            "Pelo botão: com o aparelho desligado, segure o Reset, ligue e solte quando o LED começar a piscar (uns 5 s)."
+          ],
+          "commands": [
+            "/system reset-configuration"
+          ]
+        },
+        {
+          "title": "Netinstall (aparelho que não inicia)",
+          "steps": [
+            "No computador (Windows), ligue o cabo na porta Ether1 (ou na porta de boot do modelo) e configure IP fixo, ex.: 192.168.88.2.",
+            "Abra o Netinstall, aponte o pacote .npk da arquitetura certa (ARM, MIPSBE, MMIPS, ARM64…).",
+            "Com o aparelho desligado, segure o Reset, ligue e espere ele aparecer na lista do Netinstall (até uns 20 s).",
+            "Clique em Install e aguarde. A configuração volta ao padrão de fábrica."
+          ],
+          "tip": "A arquitetura aparece em System > Resources ou na página do modelo em mikrotik.com."
+        }
+      ]
+    },
+    {
+      "id": "ubiquiti",
+      "name": "Ubiquiti",
+      "keywords": [
+        "ubiquiti",
+        "ubnt",
+        "airos",
+        "unifi",
+        "airmax"
+      ],
+      "firmwareUrl": "https://ui.com/download",
+      "notes": "",
+      "models": [
+        {
+          "name": "airMAX (LiteBeam, NanoStation, PowerBeam)",
+          "type": "radio",
+          "match": [
+            "litebeam",
+            "nanostation",
+            "powerbeam",
+            "airos",
+            "airmax"
+          ],
+          "address": "192.168.1.20",
+          "logins": [
+            {
+              "role": "Administrador (airOS antigo)",
+              "user": "ubnt",
+              "password": "ubnt",
+              "source": "manual"
+            },
+            {
+              "role": "Administrador (airOS 8+)",
+              "user": "criado no primeiro acesso",
+              "password": "criada no primeiro acesso",
+              "source": "manual"
+            }
+          ],
+          "notes": "Configure um IP fixo da faixa 192.168.1.x no computador para acessar."
+        },
+        {
+          "name": "UniFi (APs e gateways)",
+          "type": "ap",
+          "match": [
+            "unifi",
+            "u6",
+            "uap",
+            "udm",
+            "ux"
+          ],
+          "address": "Pelo controlador UniFi ou app UniFi",
+          "logins": [
+            {
+              "role": "SSH (antes de adotar)",
+              "user": "ubnt",
+              "password": "ubnt",
+              "source": "manual"
+            }
+          ],
+          "notes": "Depois de adotado, o acesso usa a senha definida no controlador."
+        }
+      ],
+      "firmware": [
+        {
+          "kind": "update",
+          "title": "Downloads Ubiquiti",
+          "notes": "",
+          "url": "https://ui.com/download"
+        }
+      ],
+      "recovery": [
+        {
+          "title": "Restaurar padrão de fábrica",
+          "steps": [
+            "Com o aparelho ligado, segure o botão Reset (use um clipe) por 10 a 15 segundos, até as luzes piscarem.",
+            "Espere de 2 a 3 minutos até ele reiniciar por completo.",
+            "Acesse com a senha de fábrica e configure de novo (internet, Wi-Fi e nova senha de acesso)."
+          ],
+          "tip": "O reset apaga toda a configuração. Anote antes usuário/senha PPPoE e o nome/senha do Wi-Fi."
+        },
+        {
+          "title": "airMAX: recuperação por TFTP",
+          "steps": [
+            "Configure no computador (cabo no PoE/LAN) IP fixo 192.168.1.25, máscara 255.255.255.0.",
+            "Com o rádio desligado, segure o Reset, ligue e mantenha até os LEDs piscarem alternados (uns 8 s).",
+            "Envie o firmware: tftp -i 192.168.1.20 put firmware.bin. Aguarde reiniciar (não desligue)."
+          ],
+          "commands": [
+            "tftp -i 192.168.1.20 put firmware.bin"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "xiaomi",
+      "name": "Xiaomi",
+      "keywords": [
+        "xiaomi",
+        "miwifi",
+        "mi router"
+      ],
+      "firmwareUrl": "https://www.mi.com/global/support",
+      "notes": "",
+      "models": [
+        {
+          "name": "Mi Router 4A / 4C / AX3000",
+          "type": "roteador",
+          "match": [
+            "4a",
+            "4c",
+            "ax3000",
+            "ax1800"
+          ],
+          "address": "192.168.31.1 ou miwifi.com",
+          "logins": [
+            {
+              "role": "Administrador",
+              "user": "(não pede)",
+              "password": "criada no primeiro acesso",
+              "source": "manual"
+            }
+          ],
+          "notes": "Também configurável pelo app Mi WiFi / Xiaomi Home."
+        }
+      ],
+      "firmware": [
+        {
+          "kind": "update",
+          "title": "Suporte Xiaomi",
+          "notes": "",
+          "url": "https://www.mi.com/global/support"
+        },
+        {
+          "kind": "restore",
+          "title": "MiWiFi Repair Tool",
+          "notes": "Ferramenta oficial da Xiaomi para regravar o firmware por cabo a partir do computador."
+        }
+      ],
+      "recovery": [
+        {
+          "title": "Restaurar padrão de fábrica",
+          "steps": [
+            "Com o aparelho ligado, segure o botão Reset (use um clipe) por 10 a 15 segundos, até as luzes piscarem.",
+            "Espere de 2 a 3 minutos até ele reiniciar por completo.",
+            "Acesse com a senha de fábrica e configure de novo (internet, Wi-Fi e nova senha de acesso)."
+          ],
+          "tip": "O reset apaga toda a configuração. Anote antes usuário/senha PPPoE e o nome/senha do Wi-Fi."
+        }
+      ]
+    },
+    {
+      "id": "cisco",
+      "name": "Cisco (Small Business)",
+      "keywords": [
+        "cisco",
+        "rv340",
+        "rv260",
+        "rv160"
+      ],
+      "firmwareUrl": "https://software.cisco.com/download/home",
+      "notes": "",
+      "models": [
+        {
+          "name": "RV160 / RV260 / RV340",
+          "type": "roteador",
+          "match": [
+            "rv160",
+            "rv260",
+            "rv340"
+          ],
+          "address": "192.168.1.1",
+          "logins": [
+            {
+              "role": "Administrador",
+              "user": "cisco",
+              "password": "cisco",
+              "source": "manual"
+            }
+          ],
+          "notes": "O equipamento obriga a troca da senha no primeiro acesso."
+        }
+      ],
+      "firmware": [
+        {
+          "kind": "update",
+          "title": "Cisco Software Download",
+          "notes": "",
+          "url": "https://software.cisco.com/download/home"
+        }
+      ],
+      "recovery": [
+        {
+          "title": "Restaurar padrão de fábrica",
+          "steps": [
+            "Com o aparelho ligado, segure o botão Reset (use um clipe) por 10 a 15 segundos, até as luzes piscarem.",
+            "Espere de 2 a 3 minutos até ele reiniciar por completo.",
+            "Acesse com a senha de fábrica e configure de novo (internet, Wi-Fi e nova senha de acesso)."
+          ],
+          "tip": "O reset apaga toda a configuração. Anote antes usuário/senha PPPoE e o nome/senha do Wi-Fi."
+        }
+      ]
+    },
+    {
+      "id": "vsol",
+      "name": "V-SOL",
+      "keywords": [
+        "v-sol",
+        "vsol",
+        "vsolcn",
+        "v2801",
+        "v2802"
+      ],
+      "firmwareUrl": "https://www.vsolcn.com/",
+      "firmware": [
+        {
+          "kind": "update",
+          "title": "Suporte V-SOL",
+          "notes": "Firmware pelo distribuidor ou pelo suporte técnico V-SOL.",
+          "url": "https://www.vsolcn.com/"
+        }
+      ],
+      "recovery": [
+        {
+          "title": "Restaurar padrão de fábrica",
+          "steps": [
+            "Com o aparelho ligado, segure o botão Reset (use um clipe) por 10 a 15 segundos, até as luzes piscarem.",
+            "Espere de 2 a 3 minutos até ele reiniciar por completo.",
+            "Acesse com a senha de fábrica e configure de novo (internet, Wi-Fi e nova senha de acesso)."
+          ],
+          "tip": "O reset apaga toda a configuração. Anote antes usuário/senha PPPoE e o nome/senha do Wi-Fi."
+        }
+      ],
+      "notes": "ONUs XPON (funcionam em GPON ou EPON). Usuário e senha diferenciam maiúsculas.",
+      "models": [
+        {
+          "name": "V2801F (ONU XPON, 1 porta)",
+          "type": "onu",
+          "pon": "xpon",
+          "match": [
+            "v2801"
+          ],
+          "address": "192.168.1.1",
+          "logins": [
+            {
+              "role": "Administrador",
+              "user": "admin",
+              "password": "stdONU101",
+              "source": "relatado"
+            }
+          ],
+          "notes": "Configure no computador o IP fixo 192.168.1.5 para acessar.",
+          "guides": [
+            "gpon-epon",
+            "fibra-sinal",
+            "ont-bridge"
+          ]
+        },
+        {
+          "name": "V2802RH (ONT XPON 2,5G)",
+          "type": "ont",
+          "pon": "xpon",
+          "match": [
+            "v2802"
+          ],
+          "address": "192.168.1.1",
+          "logins": [
+            {
+              "role": "Administrador",
+              "user": "admin",
+              "password": "stdONUi0i",
+              "source": "relatado"
+            }
+          ],
+          "notes": "Se não entrar, tente \"Admin\" com A maiúsculo. Troque a senha no primeiro acesso.",
+          "guides": [
+            "gpon-epon",
+            "fibra-sinal",
+            "ont-pppoe",
+            "ont-bridge"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cdata",
+      "name": "C-Data",
+      "keywords": [
+        "c-data",
+        "cdata",
+        "fd511",
+        "fd512"
+      ],
+      "firmwareUrl": "",
+      "firmware": [
+        {
+          "kind": "update",
+          "title": "Firmware fornecido pela operadora",
+          "notes": "Não há download público. A operadora atualiza remotamente (TR-069) ou fornece o arquivo ao técnico credenciado."
+        }
+      ],
+      "recovery": [
+        {
+          "title": "Restaurar padrão de fábrica",
+          "steps": [
+            "Com o aparelho ligado, segure o botão Reset (use um clipe) por 10 a 15 segundos, até as luzes piscarem.",
+            "Espere de 2 a 3 minutos até ele reiniciar por completo.",
+            "Acesse com a senha de fábrica e configure de novo (internet, Wi-Fi e nova senha de acesso)."
+          ],
+          "tip": "O reset apaga toda a configuração. Anote antes usuário/senha PPPoE e o nome/senha do Wi-Fi."
+        }
+      ],
+      "notes": "ONUs EPON/XPON comuns em provedores regionais.",
+      "models": [
+        {
+          "name": "FD511G-X / FD512XW (ONU EPON/XPON)",
+          "type": "onu",
+          "pon": "xpon",
+          "match": [
+            "fd511",
+            "fd512"
+          ],
+          "address": "192.168.101.1",
+          "logins": [
+            {
+              "role": "Administrador",
+              "user": "admin",
+              "password": "admin",
+              "source": "relatado"
+            }
+          ],
+          "notes": "",
+          "guides": [
+            "gpon-epon",
+            "fibra-sinal",
+            "ont-bridge"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "parks",
+      "name": "Parks",
+      "keywords": [
+        "parks",
+        "fiberlink"
+      ],
+      "firmwareUrl": "https://www.parks.com.br/",
+      "firmware": [
+        {
+          "kind": "update",
+          "title": "Suporte Parks",
+          "notes": "Firmware pelo suporte Parks ou pela operadora.",
+          "url": "https://www.parks.com.br/"
+        }
+      ],
+      "recovery": [
+        {
+          "title": "Restaurar padrão de fábrica",
+          "steps": [
+            "Com o aparelho ligado, segure o botão Reset (use um clipe) por 10 a 15 segundos, até as luzes piscarem.",
+            "Espere de 2 a 3 minutos até ele reiniciar por completo.",
+            "Acesse com a senha de fábrica e configure de novo (internet, Wi-Fi e nova senha de acesso)."
+          ],
+          "tip": "O reset apaga toda a configuração. Anote antes usuário/senha PPPoE e o nome/senha do Wi-Fi."
+        }
+      ],
+      "notes": "Fabricante nacional de ONUs/ONTs GPON.",
+      "models": [
+        {
+          "name": "Fiberlink 101 / 210 / 410 / 411",
+          "type": "ont",
+          "pon": "gpon",
+          "match": [
+            "fiberlink"
+          ],
+          "address": "Confira a etiqueta (geralmente 192.168.1.1)",
+          "logins": [
+            {
+              "role": "Administrador",
+              "user": "veja a etiqueta",
+              "password": "senha da etiqueta ou da operadora",
+              "source": "etiqueta"
+            }
+          ],
+          "notes": "Não encontramos senha de fábrica oficial publicada; use a da etiqueta ou peça à operadora.",
+          "guides": [
+            "gpon-epon",
+            "fibra-sinal",
+            "ont-pppoe",
+            "ont-bridge"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "datacom",
+      "name": "Datacom",
+      "keywords": [
+        "datacom",
+        "dm985",
+        "dm986"
+      ],
+      "firmwareUrl": "https://datacom.com.br/",
+      "firmware": [
+        {
+          "kind": "update",
+          "title": "DmSupport (portal Datacom)",
+          "notes": "Firmware e manual pelo portal de autoatendimento DmSupport.",
+          "url": "https://datacom.com.br/"
+        }
+      ],
+      "recovery": [
+        {
+          "title": "Restaurar padrão de fábrica",
+          "steps": [
+            "Com o aparelho ligado, segure o botão Reset (use um clipe) por 10 a 15 segundos, até as luzes piscarem.",
+            "Espere de 2 a 3 minutos até ele reiniciar por completo.",
+            "Acesse com a senha de fábrica e configure de novo (internet, Wi-Fi e nova senha de acesso)."
+          ],
+          "tip": "O reset apaga toda a configuração. Anote antes usuário/senha PPPoE e o nome/senha do Wi-Fi."
+        }
+      ],
+      "notes": "Suporte técnico Datacom: (51) 3933-3122.",
+      "models": [
+        {
+          "name": "DM985-100 / DM985-424 (ONU/ONT GPON)",
+          "type": "ont",
+          "pon": "gpon",
+          "match": [
+            "dm985"
+          ],
+          "address": "Confira a etiqueta",
+          "logins": [
+            {
+              "role": "Administrador",
+              "user": "veja a etiqueta",
+              "password": "senha da etiqueta ou da operadora",
+              "source": "etiqueta"
+            }
+          ],
+          "notes": "Normalmente gerenciada pela operadora via TR-069.",
+          "guides": [
+            "gpon-epon",
+            "fibra-sinal",
+            "ont-pppoe",
+            "ont-bridge"
+          ]
+        }
+      ]
+    }
+  ]
+}
